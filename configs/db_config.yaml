@@ -1,0 +1,87 @@
+users:
+  id:
+    type: INTEGER PRIMARY KEY
+    label: Telegram ID
+  username:
+    type: TEXT
+    label: Пользователь
+    default: ''
+  billing_start_date:
+    type: DATE
+    label: Начало расчета
+    default: today
+  billing_end_date:
+    type: DATE
+    label: Конец расчета
+    default: today
+  status:
+    type: TEXT
+    label: Статус
+    default: active
+
+transactions:
+  id:
+    type: INTEGER PRIMARY KEY AUTOINCREMENT
+    label: ID
+    autoincrement: true
+  user_id:
+    type: INTEGER
+    label: Пользователь ID
+  amount:
+    type: INTEGER
+    label: Сумма
+    default: 100
+  date:
+    type: DATE
+    label: Дата
+    default: today
+
+awg:
+  id:
+    type: INTEGER PRIMARY KEY
+    label: User ID
+  public_key:
+    type: TEXT
+    label: Публичный ключ
+  private_key:
+    type: TEXT
+    label: Приватный ключ
+  ip:
+    type: TEXT
+    label: IP-адрес
+  rx_bytes:
+    type: INTEGER
+    label: RX Bytes
+    default: 0
+  tx_bytes:
+    type: INTEGER
+    label: TX Bytes
+    default: 0
+  last_handshake:
+    type: TEXT
+    label: Last Handshake
+  updated_at:
+    type: DATETIME
+    label: Обновлено
+    default: now
+
+messages:
+  id:
+    type: INTEGER PRIMARY KEY AUTOINCREMENT
+    label: ID
+    autoincrement: true
+  date:
+    type: DATE
+    label: Дата добавления
+    default: today
+  recipient:
+    type: INTEGER
+    label: User ID
+  message:
+    type: TEXT
+    label: Сообщение
+    default: ''
+  status:
+    type: TEXT
+    label: Статус
+    default: Ждет отправки
