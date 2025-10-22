@@ -1,13 +1,21 @@
-#!/usr/bin/env python3
+# [file name]: main.py
+# [file content begin]
+# !/usr/bin/env python3
 """
 Точка входа в приложение VPN Admin
 """
+
+import asyncio
+import signal
+import sys
+from contextlib import AsyncExitStack
 
 from app.core.logger import log
 from app.core.config import settings
 from app.domains.users.models import UserCreate
 from app.domains.users.repository import user_repository
 from app.domains.billing.repository import transaction_repository
+from app.interfaces.telegram.bot import vpn_bot
 from datetime import date, timedelta
 
 
@@ -50,51 +58,39 @@ def test_database():
 
 
 def main():
-	"""Основная функция приложения"""
+	"""Запускает основное приложение"""
+	log.info(f"🚀 Запуск {settings.app_name} v{settings.app_version}")
+
+	# Проверка конфигурации
+	if not settings.is_configured:
+		log.error("❌ Не все обязательные настройки заполнены!")
+		log.error("Пожалуйста, проверьте файл .env")
+		return False
+
+	log.info("✅ Конфигурация загружена успешно")
+
+	# Тестирование базы данных
+	test_database()
+	log.info("✅ База данных протестирована")
+
+	# Настройка бота
+	vpn_bot.setup()
+	log.info("✅ Telegram бот настроен")
 	try:
-		log.info(f"Запуск {settings.app_name} v{settings.app_version}")
-		log.info(f"Режим: {'development' if settings.debug else 'production'}")
+		# Запуск бота (это блокирующая операция)
+		log.info("🔄 Запуск Telegram бота...")
+		log.info("📝 Используйте Ctrl+C для остановки")
 
-		# Проверка конфигурации
-		if not settings.is_configured:
-			log.warning("Не все обязательные настройки заполнены!")
-			log.warning("Пожалуйста, проверьте файл .env")
-			log.warning(f"Telegram token: {'установлен' if settings.telegram_token else 'отсутствует'}")
-			log.warning(f"Admin ID: {'установлен' if settings.telegram_admin_id > 0 else 'отсутствует'}")
-			log.warning(f"Server IP: {'установлен' if settings.awg_server_ip else 'отсутствует'}")
-			return
+		vpn_bot.run()
 
-		log.info("Конфигурация загружена успешно")
-		log.info(f"Server IP: {settings.awg_server_ip}")
-		log.info(f"Admin ID: {settings.telegram_admin_id}")
-
-		# Здесь будет инициализация и запуск компонентов
-		log.info("Инициализация компонентов...")
-
-		# Тестирование базы данных
-		test_database()
-		log.info("✅ База данных: инициализирована и протестирована")
-
-		# TODO: Запуск Telegram бота
-		log.info("Telegram бот: готов к запуску")
-
-		# TODO: Запуск веб-сервера
-		log.info("Веб-интерфейс: готов к запуску")
-
-		log.info("Приложение успешно запущено")
-
-		# Заглушка для демонстрации
-		log.info("Приложение работает... Нажмите Ctrl+C для остановки")
-		try:
-			while True:
-				pass
-		except KeyboardInterrupt:
-			log.info("Приложение остановлено пользователем")
-
+	except KeyboardInterrupt:
+		log.info("📝 Приложение остановлено пользователем")
 	except Exception as e:
-		log.critical(f"Критическая ошибка: {e}")
-		raise
+		log.critical(f"❌ Необработанная ошибка: {e}")
+		sys.exit(1)
 
 
 if __name__ == "__main__":
+	# Простой запуск
 	main()
+# [file content end]

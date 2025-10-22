@@ -22,6 +22,10 @@ class VPNConfigurationException(VPNAdminException):
     """Ошибка конфигурации VPN"""
     pass
 
+class TelegramBotException(VPNAdminException):
+    """Ошибка телеграм-бота"""
+    pass
+
 
 class DatabaseException(VPNAdminException):
     """Ошибка базы данных"""

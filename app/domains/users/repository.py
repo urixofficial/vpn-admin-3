@@ -130,6 +130,20 @@ class UserRepository:
 			log.error(f"Ошибка получения пользователей с истекшим сроком: {e}")
 			raise
 
+	def block_user(self, user_id: int) -> Optional[User]:
+		"""Блокирует пользователя"""
+		try:
+			existing_user = self.get_by_id(user_id)
+			if not existing_user:
+				raise UserNotFoundException(f"Пользователь {user_id} не найден")
+
+			db.update(self.table_name, user_id, {"status": UserStatus.BLOCKED.value})
+			return self.get_by_id(user_id)
+
+		except Exception as e:
+			log.error(f"Ошибка блокировки пользователя {user_id}: {e}")
+			raise
+
 
 # Глобальный экземпляр репозитория
 user_repository = UserRepository()
