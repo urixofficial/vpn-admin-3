@@ -12,6 +12,10 @@ class UserAlreadyExistsException(VPNAdminException):
     """Пользователь уже существует"""
     pass
 
+class NameIsNotUniqueException(VPNAdminException):
+    """Пользователь С таким име существует"""
+    pass
+
 
 class InvalidConfigurationException(VPNAdminException):
     """Неверная конфигурация"""
