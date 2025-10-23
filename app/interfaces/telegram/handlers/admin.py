@@ -6,7 +6,7 @@ from app.core.logger import log
 from app.domains.billing.repository import transaction_repository
 from app.domains.users.repository import user_repository
 # Импортируем функции из conversations
-from .conversations import ask_new_user_id, ask_user_id_to_delete
+from .conversations import ask_user_id
 from .utils import get_sender_id, get_message_func, check_for_admin
 from ..keyboards import admin_keyboard, users_keyboard, billing_keyboard
 
@@ -91,9 +91,11 @@ async def handle_admin_callback(update: Update, context: ContextTypes.DEFAULT_TY
 	elif callback_data == "users_list":
 		await list_users(update, context)
 	elif callback_data == "users_add":
-		await ask_new_user_id(update, context)
+		await ask_user_id(update, context)
+	elif callback_data == "users_edit":
+		await ask_user_id(update, context)
 	elif callback_data == "users_delete":
-		await ask_user_id_to_delete(update, context)
+		await ask_user_id(update, context)
 	elif callback_data == "users_block":
 		await block_user(update, context)
 	elif callback_data == "users_unblock":

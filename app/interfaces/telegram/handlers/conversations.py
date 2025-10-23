@@ -3,258 +3,267 @@ from datetime import date, timedelta
 
 from telegram import Update
 from telegram.ext import (
-	ContextTypes, MessageHandler, CommandHandler, filters, ConversationHandler, CallbackQueryHandler
+    ContextTypes, MessageHandler, CommandHandler, filters, ConversationHandler, CallbackQueryHandler
 )
 
 from app.core.exceptions import UserAlreadyExistsException, NameIsNotUniqueException
 from app.core.logger import log
-from app.domains.users.models import UserCreate, UserStatus
+from app.domains.users.models import UserCreate, UserUpdate, UserStatus
 from app.domains.users.repository import user_repository
-from .utils import get_sender_id, get_message_func, check_for_admin, check_for_valid_id, check_for_valid_name
+from .utils import get_message_func, check_for_admin, check_for_valid_id, check_for_valid_name
 from ..keyboards import cancel_keyboard, confirm_keyboard
 
 # Состояния для ConversationHandler
-ASK_NEW_USER_ID, ASK_NEW_USER_NAME, ASK_USER_ID_TO_DELETE, CONFIRM_USER_DELETING = range(4)
+ASK_USER_ID, ASK_USER_NAME, CONFIRM_DELETION = range(3)
+
+# Режимы операций
+ADD_MODE = "add"
+EDIT_MODE = "edit"
+DELETE_MODE = "delete"
 
 
-# ======================== Добавление пользователя =======================
+async def ask_user_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Общая функция для запроса ID пользователя"""
+    log.debug(f"Запрос ID пользователя для режима: {context.user_data.get('mode')}")
 
-async def ask_new_user_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Начинает процесс добавления пользователя"""
-	log.debug("Диалог добавления нового пользователя: запрос ID.")
+    message_func = get_message_func(update)
 
-	message_func = get_message_func(update)
+    # Проверка на админа
+    if not check_for_admin(update, context):
+        await message_func("❌ У вас нет прав доступа.")
+        return ConversationHandler.END
 
-	# Проверка на админа
-	if not check_for_admin(update, context):
-		await message_func("❌ У вас нет прав доступа.")
-		return ConversationHandler.END
+    mode = context.user_data.get("mode")
+    action = {"add": "добавления", "edit": "редактирования", "delete": "удаления"}.get(mode, "операции")
 
-	await message_func(
-		"Введите ID нового пользователя:",
-		reply_markup=cancel_keyboard()
-	)
-	return ASK_NEW_USER_ID
-
-
-async def ask_new_user_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Обрабатывает ввод ID для добавления пользователя"""
-	log.debug("Диалог добавления нового пользователя: запрос имени.")
-
-	new_user_id_text = update.message.text
-
-	# Валидация ID пользователя
-	if not check_for_valid_id(new_user_id_text):
-		await update.message.reply_text(
-			"❌ Некорректный ввод.\n"
-			"Введите ID нового пользователя:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_NEW_USER_ID
-
-	new_user_id = int(new_user_id_text)
-	context.user_data["new_user_id"] = new_user_id
-
-	await update.message.reply_text(
-		"Введите имя нового пользователя:",
-		reply_markup=cancel_keyboard()
-	)
-	return ASK_NEW_USER_NAME
+    await message_func(
+        f"Введите ID пользователя для {action}:",
+        reply_markup=cancel_keyboard()
+    )
+    return ASK_USER_ID
 
 
-async def add_new_user_to_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Добавление нового пользователя в базу данных"""
-	log.debug("Диалог добавления нового пользователя: добавление в БД.")
+async def ask_user_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Общая функция для запроса имени пользователя"""
+    log.debug(f"Запрос имени пользователя для режима: {context.user_data.get('mode')}")
 
-	try:
-		new_user_name = update.message.text
+    mode = context.user_data.get("mode")
+    action = {"add": "добавления", "edit": "редактирования"}.get(mode, "операции")
 
-		# Валидация имени пользователя
-		if not check_for_valid_name(new_user_name):
-			await update.message.reply_text(
-				"❌ Некорректный ввод. Имя должно быть от 3 до 30 символов.\n"
-				"Введите имя нового пользователя:",
-				reply_markup=cancel_keyboard()
-			)
-			return ASK_NEW_USER_NAME
-
-		new_user_id = context.user_data["new_user_id"]
-
-		# Создаем пользователя
-		user_data = UserCreate(
-			telegram_id=new_user_id,
-			username=new_user_name,
-			billing_start_date=date.today(),
-			billing_end_date=date.today() + timedelta(days=30),
-			status=UserStatus.ACTIVE
-		)
-
-		new_user = user_repository.create(user_data)
-
-		await update.message.reply_text(
-			f"✅ Пользователь успешно добавлен!\n\n"
-			f"👤 Имя: {new_user.username}\n"
-			f"🆔 ID: {new_user.id}\n"
-			f"📅 Начало: {new_user.billing_start_date}\n"
-			f"📅 Конец: {new_user.billing_end_date}\n"
-			f"🎯 Статус: {new_user.status.value}\n"
-		)
-
-		log.info(f"Пользователь успешно добавлен: {new_user.username} ({new_user_id})")
-		return ConversationHandler.END
-
-	except UserAlreadyExistsException as e:
-		await update.message.reply_text(
-			f"❌ Пользователь с ID {new_user_id} уже существует\n"
-			"Попробуйте еще раз с другим ID:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_NEW_USER_ID
-
-	except NameIsNotUniqueException as e:
-		await update.message.reply_text(
-			f"❌ Пользователь с именем '{new_user_name}' уже существует\n"
-			"Введите другое имя:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_NEW_USER_NAME
-
-	except Exception as e:
-		log.error(f"Ошибка добавления пользователя: {e}")
-		await update.message.reply_text(
-			f"❌ Ошибка при добавлении пользователя: {str(e)}\n"
-			"Попробуйте еще раз. Введите ID нового пользователя:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_NEW_USER_ID
+    await update.message.reply_text(
+        f"Введите имя пользователя для {action}:",
+        reply_markup=cancel_keyboard()
+    )
+    return ASK_USER_NAME
 
 
-# ======================== Удаление пользователя =======================
+async def process_user_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обрабатывает ввод ID пользователя и определяет следующий шаг"""
+    log.debug("Обработка введенного ID пользователя")
+
+    user_id_text = update.message.text
+    mode = context.user_data.get("mode")
+
+    # Валидация ID
+    if not check_for_valid_id(user_id_text):
+        action = {"add": "добавления", "edit": "редактирования", "delete": "удаления"}.get(mode, "операции")
+        await update.message.reply_text(
+            f"❌ Некорректный ввод.\nВведите ID пользователя для {action}:",
+            reply_markup=cancel_keyboard()
+        )
+        return ASK_USER_ID
+
+    user_id = int(user_id_text)
+    context.user_data["user_id"] = user_id
+    user = user_repository.get_by_id(user_id)
+
+    if mode == ADD_MODE:
+        if user:
+            # Пользователь существует, переключаемся в режим редактирования
+            context.user_data["mode"] = EDIT_MODE
+            await update.message.reply_text(
+                f"Пользователь с ID {user_id} уже существует.\n"
+                f"👤 Текущее имя: {user.username}\n"
+                f"Введите новое имя пользователя:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_NAME
+        else:
+            await ask_user_name(update, context)
+            return ASK_USER_NAME
+    elif mode == EDIT_MODE:
+        if not user:
+            await update.message.reply_text(
+                f"❌ Пользователь с ID {user_id} не найден.\n"
+                "Введите другой ID:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_ID
+        await update.message.reply_text(
+            f"👤 Текущее имя: {user.username}\n"
+            f"Введите новое имя пользователя:",
+            reply_markup=cancel_keyboard()
+        )
+        return ASK_USER_NAME
+    elif mode == DELETE_MODE:
+        if not user:
+            await update.message.reply_text(
+                f"❌ Пользователь с ID {user_id} не найден.\n"
+                "Введите другой ID:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_ID
+        await update.message.reply_text(
+            f"❓ Вы уверены, что хотите удалить пользователя?\n"
+            f"👤 Имя: {user.username}\n"
+            f"🆔 ID: {user.id}",
+            reply_markup=confirm_keyboard()
+        )
+        return CONFIRM_DELETION
+    else:
+        await update.message.reply_text("❌ Неизвестный режим операции.")
+        return ConversationHandler.END
 
 
-async def ask_user_id_to_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Начинает процесс удаления пользователя"""
-	log.debug("Диалог удаления пользователя: запрос ID.")
+async def process_user_operation(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обрабатывает добавление, редактирование или удаление пользователя"""
+    log.debug(f"Обработка операции: {context.user_data.get('mode')}")
 
-	message_func = get_message_func(update)
+    mode = context.user_data.get("mode")
+    user_id = context.user_data.get("user_id")
 
-	# Проверка на админа
-	if not check_for_admin(update, context):
-		await message_func("❌ У вас нет прав доступа.")
-		return ConversationHandler.END
+    if mode in [ADD_MODE, EDIT_MODE]:
+        new_user_name = update.message.text
+        action = {"add": "добавления", "edit": "редактирования"}.get(mode, "операции")
 
-	await message_func(
-		"Введите ID пользователя для удаления:",
-		reply_markup=cancel_keyboard()
-	)
-	return ASK_USER_ID_TO_DELETE
+        # Валидация имени
+        if not check_for_valid_name(new_user_name):
+            await update.message.reply_text(
+                f"❌ Некорректный ввод. Имя должно быть от 3 до 30 символов.\n"
+                f"Введите имя пользователя для {action}:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_NAME
 
+        try:
+            if mode == ADD_MODE:
+                # Добавление нового пользователя
+                user_data = UserCreate(
+                    telegram_id=user_id,
+                    username=new_user_name,
+                    billing_start_date=date.today(),
+                    billing_end_date=date.today() + timedelta(days=30),
+                    status=UserStatus.ACTIVE
+                )
+                new_user = user_repository.create(user_data)
+                await update.message.reply_text(
+                    f"✅ Пользователь успешно добавлен!\n\n"
+                    f"👤 Имя: {new_user.username}\n"
+                    f"🆔 ID: {new_user.id}\n"
+                    f"📅 Начало: {new_user.billing_start_date}\n"
+                    f"📅 Конец: {new_user.billing_end_date}\n"
+                    f"🎯 Статус: {new_user.status.value}\n"
+                )
+                log.info(f"Пользователь успешно добавлен: {new_user.username} ({user_id})")
+            elif mode == EDIT_MODE:
+                # Редактирование пользователя
+                user_data = UserUpdate(
+	                username=new_user_name
+                )
+                user_repository.update(user_id, user_data)
+                updated_user = user_repository.get_by_id(user_id)
+                await update.message.reply_text(
+                    f"✅ Пользователь успешно обновлен!\n\n"
+                    f"👤 Имя: {updated_user.username}\n"
+                    f"🆔 ID: {updated_user.id}\n"
+                    f"📅 Начало: {updated_user.billing_start_date}\n"
+                    f"📅 Конец: {updated_user.billing_end_date}\n"
+                    f"🎯 Статус: {updated_user.status.value}\n"
+                )
+                log.info(f"Пользователь успешно обновлен: {updated_user.username} ({user_id})")
 
-async def confirm_user_deleting(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Обрабатывает ввод ID для удаления пользователя и показывает клавиатуру подтверждения"""
-	log.debug("Диалог удаления пользователя: запрос подтверждения.")
+            return ConversationHandler.END
 
-	user_id_to_delete_text = update.message.text
+        except NameIsNotUniqueException:
+            await update.message.reply_text(
+                f"❌ Пользователь с именем '{new_user_name}' уже существует.\n"
+                f"Введите другое имя для {action}:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_NAME
+        except Exception as e:
+            log.error(f"Ошибка при {action} пользователя: {e}")
+            await update.message.reply_text(
+                f"❌ Ошибка при {action} пользователя: {str(e)}\n"
+                f"Введите ID пользователя для {action}:",
+                reply_markup=cancel_keyboard()
+            )
+            return ASK_USER_ID
 
-	# Валидация ID пользователя
-	if not check_for_valid_id(user_id_to_delete_text):
-		await update.message.reply_text(
-			"❌ Некорректный ввод.\n"
-			"Введите ID пользователя для удаления:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_USER_ID_TO_DELETE
+    elif mode == DELETE_MODE:
+        query = update.callback_query
+        await query.answer()
+        callback_data = query.data
 
-	user_id_to_delete = int(user_id_to_delete_text)
-	context.user_data["user_id_to_delete"] = user_id_to_delete
+        if not user_id:
+            await query.edit_message_text("❌ Ошибка: данные сессии утеряны.")
+            return ConversationHandler.END
 
-	user = user_repository.get_by_id(user_id_to_delete)
+        user = user_repository.get_by_id(user_id)
 
-	if not user:
-		await update.message.reply_text(
-			f"❌ Пользователь с ID {user_id_to_delete} не найден\n"
-			"Введите ID пользователя для удаления:",
-			reply_markup=cancel_keyboard()
-		)
-		return ASK_USER_ID_TO_DELETE
+        if callback_data == "confirm_yes":
+            if user_repository.delete(user.id):
+                await query.edit_message_text(
+                    f"✅ Пользователь {user.username} успешно удален."
+                )
+                log.info(f"Пользователь успешно удален: {user.username} ({user.id})")
+            else:
+                await query.edit_message_text(
+                    f"❌ Не удалось удалить пользователя {user.username}."
+                )
+                log.error(f"Не удалось удалить пользователя: {user.username} ({user.id})")
+        elif callback_data == "confirm_no":
+            await query.edit_message_text("❌ Удаление отменено.")
 
-	await update.message.reply_text(
-		f"❓ Вы уверены, что хотите удалить пользователя?\n"
-		f"👤 Имя: {user.username}\n"
-		f"🆔 ID: {user.id}",
-		reply_markup=confirm_keyboard()  # Используем инлайн-клавиатуру
-	)
-	return CONFIRM_USER_DELETING
+        return ConversationHandler.END
 
-
-async def delete_user_from_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Обрабатывает нажатие на кнопки подтверждения"""
-	query = update.callback_query
-	await query.answer()
-
-	callback_data = query.data
-	user_id_to_delete = context.user_data.get("user_id_to_delete")
-
-	if not user_id_to_delete:
-		await query.edit_message_text("❌ Ошибка: данные сессии утеряны.")
-		return ConversationHandler.END
-
-	user = user_repository.get_by_id(user_id_to_delete)
-
-	if callback_data == "confirm_yes":
-		if user_repository.delete(user.id):
-			await query.edit_message_text(
-				f"✅ Пользователь {user.username} успешно удален."
-			)
-			log.info(f"Пользователь успешно удален: {user.username} ({user.id})")
-		else:
-			await query.edit_message_text(
-				f"❌ Не удалось удалить пользователя {user.username}."
-			)
-			log.error(f"Не удалось удалить пользователя: {user.username} ({user.id})")
-	elif callback_data == "confirm_no":
-		await query.edit_message_text("❌ Удаление отменено.")
-
-	return ConversationHandler.END
-
-
-# ======================== Общие операции =======================
+    else:
+        await update.message.reply_text("❌ Неизвестный режим операции.")
+        return ConversationHandler.END
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	"""Отменяет текущую операцию"""
-	# Обрабатываем как текстовые сообщения, так и callback queries
-	message_func = get_message_func(update)
-	await message_func("❌ Операция отменена")
-
-	return ConversationHandler.END
+    """Отменяет текущую операцию"""
+    message_func = get_message_func(update)
+    await message_func("❌ Операция отменена")
+    return ConversationHandler.END
 
 
 def setup_conversation_handlers(application, admin_id: int):
-	"""Настраивает обработчики диалогов"""
-	admin_filter = filters.User(admin_id)
+    """Настраивает обработчики диалогов"""
+    admin_filter = filters.User(admin_id)
 
-	add_user_handler = ConversationHandler(
-		entry_points=[
-			CallbackQueryHandler(ask_new_user_id, pattern="^users_add$")
-		],
-		states={
-			ASK_NEW_USER_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, ask_new_user_name)],
-			ASK_NEW_USER_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, add_new_user_to_db)]
-		},
-		fallbacks=[CallbackQueryHandler(cancel, pattern="^cancel$")]
-	)
+    user_handler = ConversationHandler(
+        entry_points=[
+            CallbackQueryHandler(
+                lambda update, context: context.user_data.update({"mode": ADD_MODE}) or ask_user_id(update, context),
+                pattern="^users_add$"
+            ),
+            CallbackQueryHandler(
+                lambda update, context: context.user_data.update({"mode": EDIT_MODE}) or ask_user_id(update, context),
+                pattern="^users_edit$"
+            ),
+            CallbackQueryHandler(
+                lambda update, context: context.user_data.update({"mode": DELETE_MODE}) or ask_user_id(update, context),
+                pattern="^users_delete$"
+            )
+        ],
+        states={
+            ASK_USER_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_user_id)],
+            ASK_USER_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_user_operation)],
+            CONFIRM_DELETION: [CallbackQueryHandler(process_user_operation, pattern="^confirm_")],
+        },
+        fallbacks=[CallbackQueryHandler(cancel, pattern="^cancel$")]
+    )
 
-	delete_user_handler = ConversationHandler(
-		entry_points=[
-			CallbackQueryHandler(ask_user_id_to_delete, pattern="^users_delete$")
-		],
-		states={
-			ASK_USER_ID_TO_DELETE: [MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_user_deleting)],
-			CONFIRM_USER_DELETING: [CallbackQueryHandler(delete_user_from_db, pattern="^confirm_")]
-		},
-		fallbacks=[CallbackQueryHandler(cancel, pattern="^cancel$")]
-	)
-
-	application.add_handler(add_user_handler)
-	application.add_handler(delete_user_handler)
+    application.add_handler(user_handler)
