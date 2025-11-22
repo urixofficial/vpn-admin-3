@@ -1,0 +1,19 @@
+[project]
+name = "vpn-admin-3"
+version = "0.1.0"
+description = "App to control vpn server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiogram>=3.22.0",
+    "aiosqlite>=0.21.0",
+    "loguru>=0.7.3",
+    "pydantic>=2.11.10",
+    "pydantic-settings>=2.12.0",
+    "sqlalchemy>=2.0.44",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.1",
+]
