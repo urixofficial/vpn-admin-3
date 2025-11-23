@@ -1,6 +1,5 @@
 from aiogram.fsm.state import StatesGroup, State
 
-
 class CrudUserStates(StatesGroup):
 	create_enter_id = State()
 	create_enter_name = State()

@@ -12,7 +12,6 @@ from src.user.handlers.keyboards import (
 
 router = Router(name="delete_user_router")
 
-
 @router.message(CrudUserStates.show_profile, F.text == "Удалить")
 async def delete_user_ste1(message: Message, state: FSMContext):
 	log.debug("Удаление пользователя. Запрос подтверждения")

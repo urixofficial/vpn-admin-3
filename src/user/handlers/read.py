@@ -9,7 +9,6 @@ from .states import CrudUserStates
 
 router = Router(name="read_user_router")
 
-
 @router.message(F.text == "Список пользователей")
 async def cmd_list_users(message: Message):
 	log.debug("Вывод списка пользователей")
@@ -35,7 +34,7 @@ async def show_user_step1(message: Message, state: FSMContext):
 
 @router.message(CrudUserStates.show_enter_id)
 async def show_user_step2(message: Message, state: FSMContext):
-	log.debug("Получен id={}".format(message.text))
+	log.debug("Введен id={}".format(message.text))
 	try:
 		user_id = int(message.text)
 	except ValueError:

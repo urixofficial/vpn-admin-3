@@ -1,5 +1,4 @@
 from aiogram import Router, F
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
@@ -12,7 +11,6 @@ from .states import CrudUserStates
 
 router = Router(name="create_user_router")
 
-
 @router.message(F.text == "Создать пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
 	log.debug("Пользователь {} ({}) выполнил команду /create_user".format(
@@ -24,7 +22,7 @@ async def create_user_step1(message: Message, state: FSMContext):
 
 @router.message(CrudUserStates.create_enter_id)
 async def create_user_step2(message: Message, state: FSMContext):
-	log.debug("Получен id={}".format(message.text))
+	log.debug("Введен id={}".format(message.text))
 	try:
 		user_id = int(message.text)
 	except ValueError:
