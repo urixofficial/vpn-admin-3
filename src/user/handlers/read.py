@@ -57,8 +57,8 @@ async def show_user_step2(message: Message, state: FSMContext):
 		f"ID: {user_dto.id}\n"
 		f"Баланс: {user_dto.balance}\n"
 		f"Дата расчета: {user_dto.billing_date}\n"
-		f"Создан: {user_dto.created_at}\n"
-		f"Обновлен: {user_dto.updated_at}"
+		f"Создан: {user_dto.created_at.date()}\n"
+		f"Обновлен: {user_dto.updated_at.date()}"
 	)
 	await message.answer(text, reply_markup=get_user_profile_keyboard())
 	await state.set_state(CrudUserStates.show_profile)

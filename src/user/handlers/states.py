@@ -5,4 +5,5 @@ class CrudUserStates(StatesGroup):
 	create_enter_name = State()
 	show_enter_id = State()
 	show_profile = State()
+	update_user = State()
 	delete_confirmation = State()
