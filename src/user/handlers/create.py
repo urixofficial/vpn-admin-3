@@ -1,0 +1,68 @@
+from aiogram import Router
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import Message, ReplyKeyboardRemove
+from sqlalchemy.exc import IntegrityError
+
+from src.core.logger import log
+from src.user.dto import CreateUserDto
+from src.user.repo import create_user
+from .keyboards import get_cancel_keyboard
+
+router = Router(name="create_user_router")
+
+class CreateUserStates(StatesGroup):
+	enter_id = State()
+	enter_name = State()
+
+@router.message(Command("create_user"))
+async def create_user_step1(message: Message, state: FSMContext):
+	log.debug("Пользователь {} ({}) выполнил команду /create_user".format(
+		message.from_user.full_name,
+		message.from_user.id
+	))
+	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
+	await state.set_state(CreateUserStates.enter_id)
+
+@router.message(CreateUserStates.enter_id)
+async def create_user_step2(message: Message, state: FSMContext):
+	log.debug("Получен id={}".format(message.text))
+	try:
+		user_id = int(message.text)
+	except ValueError:
+		log.error("ID должен быть целым числом")
+		await message.answer("ID должен быть целым числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		return
+	if user_id <= 0:
+		log.error("ID должен быть больше нуля")
+		await message.answer("ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		return
+	await state.update_data(id=user_id)
+	log.debug("Запрос имени пользователя")
+	await message.answer("Введите имя пользователя или псевдоним:", reply_markup=get_cancel_keyboard())
+	await state.set_state(CreateUserStates.enter_name)
+
+@router.message(CreateUserStates.enter_name)
+async def create_user_step3(message: Message, state: FSMContext):
+	log.debug("Получено имя name={}".format(message.text))
+	name = message.text
+	if not 3 < len(name) < 24:
+		log.error("Имя должно быть от 3 до 24 символов")
+		await message.answer("Имя должно быть от 3 до 24 символов. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		return
+	await state.update_data(name=name)
+	log.debug("Создание записи в базе данных")
+	data = await state.get_data()
+	create_user_dto = CreateUserDto(**data)
+	try:
+		user_dto = await create_user(create_user_dto)
+		log.debug("Запись успешно добавлена: {}".format(user_dto))
+		await  message.answer("Пользователь успешно добавлен", reply_markup=ReplyKeyboardRemove())
+	except IntegrityError:
+		log.error("Ошибка целостности данных")
+		await message.answer("Пользователь уже существует", reply_markup=ReplyKeyboardRemove())
+	except Exception as e:
+		log.error("Ошибка: {}".format(e))
+		await message.answer("Неизвестная ошибка", reply_markup=ReplyKeyboardRemove())
+	await state.clear()
