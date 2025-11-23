@@ -7,23 +7,24 @@ from src.core.logger import log
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
-	log.debug("Инициализация настроек")
+    log.debug("Инициализация настроек")
 
-	model_config = SettingsConfigDict(env_file=BASE_DIR / ".env")
+    # Общие настройки
+    APP_NAME: str = Field(default=None, description="Название приложения")
+    APP_VERSION: str = Field(default=None, description="Версия приложения")
 
-	# Общие настройки
-	APP_NAME: str = Field(description="Название приложения")
-	APP_VERSION: str = Field(description="Версия приложения")
+    # Database
+    DB_PATH: str = Field(default=None, description="Путь к базе данных")
+    DB_ECHO: bool = Field(default=False, description="Вывод SQL-команд в терминал")
 
-	# Database
-	DB_PATH: str = Field(description="DSM-строка для доступа к базе данных")
+    # Telegram
+    TELEGRAM_TOKEN: str = Field(default=None, description="Telegram Token")
+    TELEGRAM_ADMIN_ID: int = Field(default=None, description="Admin ID")
 
-	# Telegram
-	TELEGRAM_TOKEN: str = Field(description="Telegram Token")
-	TELEGRAM_ADMIN_ID: int = Field(description="Admin ID")
+    model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", case_sensitive=False)
 
-	@property
-	def get_db_url(self):
-		return f"sqlite+aiosqlite:///{self.DB_PATH}"
+    @property
+    def get_db_url(self):
+        return f"sqlite+aiosqlite:///{BASE_DIR}/{self.DB_PATH}"
 
 settings = Settings()

@@ -1,27 +1,40 @@
 import asyncio
-from aiogram import Dispatcher, Bot, Router
-from aiogram.filters import CommandStart
-from aiogram.types import Message
+
 
 from src.core.config import settings
 from src.core.logger import log
 
-router = Router()
+from src.core.database import init_db
+from src.user.dto import CreateUserDto, UpdateUserDto
+from src.user.repo import create_user, get_user, get_users, update_user, delete_user
+# from src.user.handlers import router as user_router
+# from src.transaction.handlers import router as transaction_router
 
-@router.message(CommandStart)
-async def command_start(message: Message):
-	log.debug("Пользователь {} ({}) выполнил команду /start".format(
-		message.from_user.full_name,
-		message.from_user.id
-	))
+
 
 async def main():
 	log.debug("Запуск {} {}".format(settings.APP_NAME, settings.APP_VERSION))
 
-	dp = Dispatcher()
-	dp.include_router(router)
-	bot = Bot(settings.TELEGRAM_TOKEN)
-	await dp.start_polling(bot)
+	await init_db()
+	print(await create_user(CreateUserDto(id=12345678, name="Владимир Путин")))
+	# print(await create_user(CreateUserDto(id=12345678, name="Владимир Путин")))
+	print(await create_user(CreateUserDto(id=6395792835, name="Борис Ельцин")))
+	print(await create_user(CreateUserDto(id=234798543, name="Иосиф Сталин")))
+	print(await get_user(6395792835))
+	print(await get_user(6))
+	print(await get_users())
+	await delete_user(6395792835)
+	print(await get_users())
+	# await delete_user(7654)
+	print(await update_user(234798543, UpdateUserDto(name="Владимир Ленин")))
+
+	# dp = Dispatcher()
+	# dp.include_router(user_router)
+	# dp.include_router(transaction_router)
+	# dp.include_router(core_router)
+
+	# bot = Bot(settings.TELEGRAM_TOKEN)
+	# await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
