@@ -12,7 +12,7 @@ async def init_db():
 	log.debug("Инициализация базы данных: '{}'".format(settings.get_db_url))
 	try:
 		async with engine.begin() as conn:
-			await conn.run_sync(Base.metadata.drop_all)
+			# await conn.run_sync(Base.metadata.drop_all)
 			await conn.run_sync(Base.metadata.create_all)
 		log.debug("OK")
 	except Exception as e:

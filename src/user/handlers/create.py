@@ -1,31 +1,28 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
 from src.core.logger import log
 from src.user.dto import CreateUserDto
 from src.user.repo import create_user
-from .keyboards import get_cancel_keyboard
+from .keyboards import get_cancel_keyboard, get_user_control_keyboard
+from .states import CrudUserStates
 
 router = Router(name="create_user_router")
 
-class CreateUserStates(StatesGroup):
-	enter_id = State()
-	enter_name = State()
 
-@router.message(Command("create_user"))
+@router.message(F.text == "Создать пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
 	log.debug("Пользователь {} ({}) выполнил команду /create_user".format(
 		message.from_user.full_name,
 		message.from_user.id
 	))
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
-	await state.set_state(CreateUserStates.enter_id)
+	await state.set_state(CrudUserStates.create_enter_id)
 
-@router.message(CreateUserStates.enter_id)
+@router.message(CrudUserStates.create_enter_id)
 async def create_user_step2(message: Message, state: FSMContext):
 	log.debug("Получен id={}".format(message.text))
 	try:
@@ -41,9 +38,9 @@ async def create_user_step2(message: Message, state: FSMContext):
 	await state.update_data(id=user_id)
 	log.debug("Запрос имени пользователя")
 	await message.answer("Введите имя пользователя или псевдоним:", reply_markup=get_cancel_keyboard())
-	await state.set_state(CreateUserStates.enter_name)
+	await state.set_state(CrudUserStates.create_enter_name)
 
-@router.message(CreateUserStates.enter_name)
+@router.message(CrudUserStates.create_enter_name)
 async def create_user_step3(message: Message, state: FSMContext):
 	log.debug("Получено имя name={}".format(message.text))
 	name = message.text
@@ -58,11 +55,11 @@ async def create_user_step3(message: Message, state: FSMContext):
 	try:
 		user_dto = await create_user(create_user_dto)
 		log.debug("Запись успешно добавлена: {}".format(user_dto))
-		await  message.answer("Пользователь успешно добавлен", reply_markup=ReplyKeyboardRemove())
+		await  message.answer("Пользователь успешно добавлен.", reply_markup=get_user_control_keyboard())
 	except IntegrityError:
 		log.error("Ошибка целостности данных")
-		await message.answer("Пользователь уже существует", reply_markup=ReplyKeyboardRemove())
+		await message.answer("Пользователь уже существует.", reply_markup=get_user_control_keyboard())
 	except Exception as e:
 		log.error("Ошибка: {}".format(e))
-		await message.answer("Неизвестная ошибка", reply_markup=ReplyKeyboardRemove())
+		await message.answer("Неизвестная ошибка.", reply_markup=get_user_control_keyboard())
 	await state.clear()

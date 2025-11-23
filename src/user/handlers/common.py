@@ -1,18 +1,18 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 
 from src.core.logger import log
 from .keyboards import get_user_control_keyboard
 
 router = Router(name="user_control_router")
 
-@router.message(Command("cancel"))
+@router.message(F.text == "Отмена")
 async def cmd_cancel(message: Message, state: FSMContext):
 	log.debug("Действие отменено")
+	await message.answer("Действие отменено.", reply_markup=get_user_control_keyboard())
 	await state.clear()
-	await message.answer("Действие отменено", reply_markup=ReplyKeyboardRemove())
 
 @router.message(Command("user_control"))
 async def cmd_user_control(message: Message):
@@ -20,6 +20,4 @@ async def cmd_user_control(message: Message):
 		message.from_user.full_name,
 		message.from_user.id
 	))
-	text = "Управление пользователями:"
-
-	await message.answer(text, reply_markup=get_user_control_keyboard())
+	await message.answer("Управление пользователями:", reply_markup=get_user_control_keyboard())
