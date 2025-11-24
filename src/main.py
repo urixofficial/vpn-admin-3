@@ -5,16 +5,13 @@ from aiogram import Dispatcher, Bot
 from src.core.config import settings
 from src.core.logger import log
 
-from src.core.database import init_db
 from src.user.handlers import router as user_router
 # from src.transaction.handlers import router as transaction_router
 
 
 
 async def main():
-	log.debug("Запуск {} {}".format(settings.APP_NAME, settings.APP_VERSION))
-
-	await init_db()
+	log.info("Запуск {} {}".format(settings.APP_NAME, settings.APP_VERSION))
 
 	dp = Dispatcher()
 	dp.include_router(user_router)
