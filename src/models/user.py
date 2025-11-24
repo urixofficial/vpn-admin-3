@@ -4,10 +4,10 @@ from sqlalchemy import BigInteger, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, date
 
-from src.core.orm import Base
+from src.models.base import Base
 
 if TYPE_CHECKING:
-	from src.transaction.orm import TransactionOrm
+	from src.models.transaction import TransactionOrm
 
 
 class UserOrm(Base):

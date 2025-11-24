@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import connection
 from src.core.logger import log
 from src.user.dto import CreateUserDto, UserDto, UpdateUserDto
-from src.user.orm import UserOrm
+from src.models.user import UserOrm
 
 @connection
 async def get_users(session: AsyncSession) -> list[UserDto]:

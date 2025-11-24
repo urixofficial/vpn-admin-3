@@ -8,13 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from src.core.config import settings
-from src.core.orm import Base
-
-import importlib
-
-# Импорт ORM-моделей для корректной работы миграций
-importlib.import_module("src.user.orm")
-importlib.import_module("src.transaction.orm")
+from src.models.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

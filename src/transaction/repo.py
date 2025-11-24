@@ -2,7 +2,7 @@ from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import connection
-from src.transaction.orm import TransactionOrm
+from src.models.transaction import TransactionOrm
 from src.transaction.dto import CreateTransaction
 
 @connection
