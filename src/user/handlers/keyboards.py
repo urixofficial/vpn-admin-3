@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from user.dto import UpdateUserDto
+from core.schemas.user import UpdateUser
 
 def get_cancel_keyboard():
 	keyboard = ReplyKeyboardBuilder()
@@ -32,7 +32,7 @@ def get_confirmation_keyboard():
 
 def get_update_user_keyboard():
 	keyboard = ReplyKeyboardBuilder()
-	for key in UpdateUserDto.model_fields:
+	for key in UpdateUser.model_fields:
 		keyboard.button(text=key)
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)

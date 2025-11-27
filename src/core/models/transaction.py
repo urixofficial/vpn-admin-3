@@ -7,9 +7,9 @@ from datetime import datetime
 from .base import Base
 
 if TYPE_CHECKING:
-	from src.models.user import UserOrm
+	from .user import UserModel
 
-class TransactionOrm(Base):
+class TransactionModel(Base):
 	__tablename__ = "transactions"
 	id: Mapped[int] = mapped_column(primary_key=True)
 	user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -21,4 +21,4 @@ class TransactionOrm(Base):
 		default=datetime.now(), server_default=func.now()
 	)
 
-	user: Mapped["UserOrm"] = relationship(back_populates="transactions")
+	user: Mapped["UserModel"] = relationship(back_populates="transactions")

@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from core.logger import log
-# from user.dto import UpdateUserDto
+# from user.dto import UpdateUser
 from .states import CrudUserStates
 from .keyboards import get_update_user_keyboard
 

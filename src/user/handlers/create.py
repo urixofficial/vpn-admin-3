@@ -4,7 +4,7 @@ from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
 from core.logger import log
-from user.dto import CreateUserDto
+from core.schemas.user import CreateUser
 from user.repo import create_user
 from .keyboards import get_cancel_keyboard, get_user_control_keyboard
 from .states import CrudUserStates
@@ -49,7 +49,7 @@ async def create_user_step3(message: Message, state: FSMContext):
 	await state.update_data(name=name)
 	log.debug("Создание записи в базе данных")
 	data = await state.get_data()
-	create_user_dto = CreateUserDto(**data)
+	create_user_dto = CreateUser(**data)
 	try:
 		user_dto = await create_user(create_user_dto)
 		log.debug("Запись успешно добавлена: {}".format(user_dto))
