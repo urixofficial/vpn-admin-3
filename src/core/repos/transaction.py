@@ -12,6 +12,7 @@ from core.logger import log
 from core.database import connection
 
 from .base import BaseRepo
+from ..models import UserModel
 
 
 class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel]):
@@ -22,6 +23,32 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		transaction_models = await session.execute(query)
 		await session.commit()
 		return [ReadTransaction.model_validate(transaction_model) for transaction_model in transaction_models]
+
+	@connection
+	async def create(self, create_transaction: CreateTransaction, session: AsyncSession) -> ReadTransaction:
+		log.debug(
+			"Создание транзакции {}. Обновление баланса пользователя {}".format(
+				create_transaction, create_transaction.user_id
+			)
+		)
+		transaction_model = TransactionModel(**create_transaction.model_dump())
+		session.add(transaction_model)
+		user_model = await session.get(UserModel, transaction_model.user_id)
+		user_model.balance += transaction_model.amount
+		await session.commit()
+		# await session.refresh(item_model)
+		return ReadTransaction.model_validate(transaction_model)
+
+	@connection
+	async def delete(self, transaction_id: int, session: AsyncSession) -> None:
+		log.debug("Удаление транзакции {}. Обновление баланса пользователя".format(transaction_id))
+		transaction_model = await session.get(self.model, transaction_id)
+		if not transaction_model:
+			raise Exception("Транзакция не найдена: {}".format(transaction_id))
+		await session.delete(transaction_model)
+		user_model = await session.get(UserModel, transaction_model.user_id)
+		user_model.balance -= transaction_model.amount
+		await session.commit()
 
 
 transaction_repo = TransactionRepo(CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel)

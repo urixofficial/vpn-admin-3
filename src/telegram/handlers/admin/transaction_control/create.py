@@ -81,4 +81,5 @@ async def create_transaction_step3(message: Message, state: FSMContext):
 	except Exception as e:
 		log.error("Ошибка: {}".format(e))
 		await message.answer("Неизвестная ошибка.", reply_markup=get_transaction_control_keyboard())
+		# raise
 	await state.clear()

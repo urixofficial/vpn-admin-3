@@ -18,4 +18,4 @@ async def update_user(message: Message, state: FSMContext):
 	await state.set_state(UserCrudStates.update_user)
 
 	# data = await state.get_data()
-	# item_id = data["item_id"]
+	# transaction_id = data["transaction_id"]
