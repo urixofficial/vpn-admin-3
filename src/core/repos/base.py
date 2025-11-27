@@ -33,25 +33,16 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 		stmt = select(self.model).order_by(self.model.id)
 		result: Result = await session.execute(stmt)
 		item_models = result.scalars().all()
-		return [
-			self.read_schema.model_validate(item_model)
-			for item_model in item_models
-		]
+		return [self.read_schema.model_validate(item_model) for item_model in item_models]
 
 	@connection
-	async def get(
-		self, item_id: int, session: AsyncSession
-	) -> ReadSchema | None:
+	async def get(self, item_id: int, session: AsyncSession) -> ReadSchema | None:
 		log.debug("Получение записи по id={}".format(item_id))
 		item_model = await session.get(self.model, item_id)
-		return (
-			self.read_schema.model_validate(item_model) if item_model else None
-		)
+		return self.read_schema.model_validate(item_model) if item_model else None
 
 	@connection
-	async def create(
-		self, create_item: CreateSchema, session: AsyncSession
-	) -> ReadSchema:
+	async def create(self, create_item: CreateSchema, session: AsyncSession) -> ReadSchema:
 		log.debug("Создание записи {}".format(create_item))
 		item_model = self.model(**create_item.model_dump())
 		session.add(item_model)
@@ -60,14 +51,8 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 		return self.read_schema.model_validate(item_model)
 
 	@connection
-	async def update(
-		self, item_id: int, update_item: UpdateSchema, session: AsyncSession
-	) -> ReadSchema:
-		log.debug(
-			"Обновление записи с id={} значениями {}".format(
-				item_id, update_item
-			)
-		)
+	async def update(self, item_id: int, update_item: UpdateSchema, session: AsyncSession) -> ReadSchema:
+		log.debug("Обновление записи с id={} значениями {}".format(item_id, update_item))
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
 			raise Exception("Запись с id={} не найдена".format(item_id))

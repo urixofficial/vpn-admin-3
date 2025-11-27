@@ -9,16 +9,13 @@ from .base import Base
 if TYPE_CHECKING:
 	from .user import UserModel
 
+
 class TransactionModel(Base):
 	__tablename__ = "transactions"
 	id: Mapped[int] = mapped_column(primary_key=True)
 	user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 	amount: Mapped[int]
-	created_at: Mapped[datetime] = mapped_column(
-		default=datetime.now(), server_default=func.now()
-	)
-	updated_at: Mapped[datetime] = mapped_column(
-		default=datetime.now(), server_default=func.now()
-	)
+	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
+	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 
 	user: Mapped["UserModel"] = relationship(back_populates="transactions")

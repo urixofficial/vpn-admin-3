@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class UserModel(Base):
 	__tablename__ = "users"
-	
+
 	id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
 	name: Mapped[str] = mapped_column(String(32), unique=True)
 	balance: Mapped[int] = mapped_column(default=0, server_default="0")
