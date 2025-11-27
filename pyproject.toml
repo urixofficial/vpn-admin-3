@@ -21,8 +21,9 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 79
-indent-style = "tab"
+line-length = 120
+fix = true
+show-fixes = true
 
 [tool.ruff.format]
 quote-style = "double"

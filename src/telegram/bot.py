@@ -4,6 +4,7 @@ from telegram.handlers import router as main_router
 from core.config import settings
 from core.logger import log
 
+
 async def run_bot():
 	log.debug("Запуск бота...")
 

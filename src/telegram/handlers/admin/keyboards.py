@@ -6,12 +6,14 @@ def get_cancel_keyboard():
 	keyboard.button(text="Отмена")
 	return keyboard.as_markup(resize_keyboard=True)
 
+
 def get_confirmation_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Да")
 	keyboard.button(text="Нет")
 	keyboard.adjust(2)
 	return keyboard.as_markup(resize_keyboard=True)
+
 
 def get_admin_panel_keyboard():
 	keyboard = ReplyKeyboardBuilder()

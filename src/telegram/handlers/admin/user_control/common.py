@@ -1,12 +1,11 @@
 from aiogram import Router, F
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from core.logger import log
 from .keyboards import get_user_control_keyboard
 
 router = Router(name="user_control_panel_router")
+
 
 @router.message(F.text == "Пользователи")
 async def cmd_user_control(message: Message):

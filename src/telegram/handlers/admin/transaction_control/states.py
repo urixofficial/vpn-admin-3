@@ -1,5 +1,6 @@
 from aiogram.fsm.state import StatesGroup, State
 
+
 class TransactionCrudStates(StatesGroup):
 	create_enter_user_id = State()
 	create_enter_amount = State()

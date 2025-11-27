@@ -14,14 +14,17 @@ from .states import TransactionCrudStates
 
 router = Router(name="create_user_router")
 
+
 @router.message(F.text == "Добавить транзакцию")
 async def create_transaction_step1(message: Message, state: FSMContext):
-	log.debug("Пользователь {} ({}) выполнил команду /create_transaction".format(
-		message.from_user.full_name,
-		message.from_user.id
-	))
+	log.debug(
+		"Пользователь {} ({}) запустил создание транзакции. Запрос ID пользователя".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.create_enter_user_id)
+
 
 @router.message(TransactionCrudStates.create_enter_user_id)
 async def create_transaction_step2(message: Message, state: FSMContext):
@@ -34,17 +37,22 @@ async def create_transaction_step2(message: Message, state: FSMContext):
 		return
 	if user_id <= 0:
 		log.debug("ID должен быть больше нуля")
-		await message.answer("ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		await message.answer(
+			"ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
+		)
 		return
 	user = await user_repo.get(user_id)
 	if not user:
 		log.debug("Пользователь с указанным ID не найден. Повторный запрос")
-		await message.answer("Пользователь с указанным ID не найден. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		await message.answer(
+			"Пользователь с указанным ID не найден. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
+		)
 		return
 	await state.update_data(user_id=user_id)
 	log.debug("Запрос суммы транзакции")
 	await message.answer("Введите сумму транзакции:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.create_enter_amount)
+
 
 @router.message(TransactionCrudStates.create_enter_amount)
 async def create_transaction_step3(message: Message, state: FSMContext):
@@ -66,7 +74,7 @@ async def create_transaction_step3(message: Message, state: FSMContext):
 	try:
 		transaction = await transaction_repo.create(create_transaction)
 		log.debug("Запись успешно добавлена: {}".format(transaction))
-		await  message.answer("Запись успешно добавлена.", reply_markup=get_transaction_control_keyboard())
+		await message.answer("Запись успешно добавлена.", reply_markup=get_transaction_control_keyboard())
 	except IntegrityError:
 		log.debug("Запись уже существует")
 		await message.answer("Запись уже существует.", reply_markup=get_transaction_control_keyboard())

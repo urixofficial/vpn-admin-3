@@ -8,13 +8,16 @@ class TransactionBase(BaseModel):
 
 	model_config = ConfigDict(from_attributes=True)
 
+
 class CreateTransaction(TransactionBase):
 	pass
+
 
 class ReadTransaction(TransactionBase):
 	id: int
 	created_at: datetime
 	updated_at: datetime
+
 
 class UpdateTransaction(BaseModel):
 	user_id: int | None = None

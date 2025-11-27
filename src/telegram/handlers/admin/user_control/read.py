@@ -10,6 +10,7 @@ from .states import UserCrudStates
 
 router = Router(name="read_user_router")
 
+
 @router.message(F.text == "Список пользователей")
 async def list_users(message: Message):
 	log.debug("Вывод списка пользователей")
@@ -18,20 +19,19 @@ async def list_users(message: Message):
 		log.debug("Список пользователей пуст")
 		await message.answer("Список пользователей пуст")
 		return
-	text = (
-		"Список пользователей:\n"
-		"-----------------------------------\n"
-	)
+	text = "Список пользователей:\n-----------------------------------\n"
 	for number, user in enumerate(users, start=1):
 		line = f"{number:02d}. {user.name} ({user.id})\n"
 		text += line
 	await message.answer(text, reply_markup=get_user_control_keyboard())
+
 
 @router.message(F.text == "Профиль пользователя")
 async def show_user_step1(message: Message, state: FSMContext):
 	log.debug("Вывод профиля пользователя. Запрос ID")
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.show_enter_id)
+
 
 @router.message(UserCrudStates.show_enter_id)
 async def show_user_step2(message: Message, state: FSMContext):
@@ -44,7 +44,9 @@ async def show_user_step2(message: Message, state: FSMContext):
 		return
 	if user_id <= 0:
 		log.debug("ID должен быть больше нуля. Повторный запрос")
-		await message.answer("ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		await message.answer(
+			"ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
+		)
 		return
 	user = await user_repo.get(user_id)
 	if not user:
@@ -54,7 +56,7 @@ async def show_user_step2(message: Message, state: FSMContext):
 	await state.update_data(user_id=user_id)
 	text = (
 		f"Пользователь {user.name}\n"
-		f"-----------------------------------\n"
+		"-----------------------------------\n"
 		f"ID: {user.id}\n"
 		f"Баланс: {user.balance}\n"
 		f"Дата расчета: {user.billing_date}\n"

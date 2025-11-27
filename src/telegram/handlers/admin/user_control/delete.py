@@ -11,12 +11,14 @@ from .keyboards import get_user_control_keyboard
 
 router = Router(name="delete_user_router")
 
+
 @router.message(UserCrudStates.show_profile, F.text == "Удалить")
 async def delete_user_ste1(message: Message, state: FSMContext):
 	log.debug("Удаление пользователя. Запрос подтверждения")
 
 	await message.answer("Удалить пользователя?", reply_markup=get_confirmation_keyboard())
 	await state.set_state(UserCrudStates.delete_confirmation)
+
 
 @router.message(UserCrudStates.delete_confirmation, F.text == "Да")
 async def delete_confirmation_ok(message: Message, state: FSMContext):
@@ -26,6 +28,7 @@ async def delete_confirmation_ok(message: Message, state: FSMContext):
 	await user_repo.delete(user_id)
 	log.debug("Пользователь с id={} успешно удален".format(user_id))
 	await message.answer("Пользователь успешно удален.", reply_markup=get_user_control_keyboard())
+
 
 @router.message(UserCrudStates.delete_confirmation, F.text == "Нет")
 async def delete_confirmation_no(message: Message, state: FSMContext):

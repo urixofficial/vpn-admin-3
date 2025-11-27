@@ -12,6 +12,7 @@ from .states import TransactionCrudStates
 
 router = Router(name="read_transaction_router")
 
+
 @router.message(F.text == "Список транзакций")
 async def list_transactions(message: Message):
 	log.debug("Вывод списка транзакций")
@@ -20,21 +21,20 @@ async def list_transactions(message: Message):
 		log.debug("Нет записей")
 		await message.answer("Нет записей.")
 		return
-	text = (
-		"Список транзакций:\n"
-		"-----------------------------------\n"
-	)
+	text = "Список транзакций:\n-----------------------------------\n"
 	for number, transaction in enumerate(transactions, start=1):
 		user = await user_repo.get(transaction.user_id)
 		line = f"{number:03d}. {transaction.amount}₽ - {user.name}\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 
+
 @router.message(F.text == "Профиль транзакции")
 async def show_user_step1(message: Message, state: FSMContext):
 	log.debug("Вывод профиля транзакции. Запрос ID")
 	await message.answer("Введите ID транзакции:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.show_enter_id)
+
 
 @router.message(TransactionCrudStates.show_enter_id)
 async def show_user_step2(message: Message, state: FSMContext):

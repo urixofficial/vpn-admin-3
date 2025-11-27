@@ -12,14 +12,17 @@ from .states import UserCrudStates
 
 router = Router(name="create_user_router")
 
+
 @router.message(F.text == "Создать пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
-	log.debug("Пользователь {} ({}) запустил добавление пользователя. Запрос ID".format(
-		message.from_user.full_name,
-		message.from_user.id
-	))
+	log.debug(
+		"Пользователь {} ({}) запустил добавление пользователя. Запрос ID".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.create_enter_id)
+
 
 @router.message(UserCrudStates.create_enter_id)
 async def create_user_step2(message: Message, state: FSMContext):
@@ -32,7 +35,9 @@ async def create_user_step2(message: Message, state: FSMContext):
 		return
 	if user_id <= 0:
 		log.debug("ID должен быть больше нуля. Повторный запрос")
-		await message.answer("ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		await message.answer(
+			"ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
+		)
 		return
 	user = await user_repo.get(user_id)
 	if user:
@@ -44,13 +49,16 @@ async def create_user_step2(message: Message, state: FSMContext):
 	await message.answer("Введите имя пользователя или псевдоним:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.create_enter_name)
 
+
 @router.message(UserCrudStates.create_enter_name)
 async def create_user_step3(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	name = message.text
 	if not 3 < len(name) < 24:
 		log.debug("Имя должно быть от 3 до 24 символов")
-		await message.answer("Имя должно быть от 3 до 24 символов. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
+		await message.answer(
+			"Имя должно быть от 3 до 24 символов. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
+		)
 		return
 	user = await user_repo.get_by_name(name)
 	if user:
@@ -64,7 +72,7 @@ async def create_user_step3(message: Message, state: FSMContext):
 	try:
 		user = await user_repo.create(create_user_dto)
 		log.debug("Запись успешно добавлена: {}".format(user))
-		await  message.answer("Пользователь успешно добавлен.", reply_markup=get_user_control_keyboard())
+		await message.answer("Пользователь успешно добавлен.", reply_markup=get_user_control_keyboard())
 	except IntegrityError:
 		log.debug("Пользователь уже существует")
 		await message.answer("Пользователь уже существует.", reply_markup=get_user_control_keyboard())
