@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 from core.logger import log
 from core.schemas.user import CreateUser
-from user.repo import create_user
+from core.repos.user import create_user
 from .keyboards import get_cancel_keyboard, get_user_control_keyboard
 from .states import CrudUserStates
 

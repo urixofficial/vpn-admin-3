@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from core.logger import log
 from user.handlers.states import CrudUserStates
-from user.repo import delete_user
+from core.repos.user import delete_user
 from user.handlers.keyboards import (
 	get_confirmation_keyboard,
 	get_user_control_keyboard,

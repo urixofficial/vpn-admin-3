@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from core.logger import log
-from user.repo import get_users, get_user
+from core.repos.user import get_users, get_user
 from .keyboards import get_user_control_keyboard, get_cancel_keyboard, get_user_profile_keyboard
 from .states import CrudUserStates
 
