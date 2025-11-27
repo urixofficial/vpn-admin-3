@@ -10,9 +10,6 @@ from .base import BaseRepo
 
 
 class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
-	def __init__(self):
-		super().__init__(CreateUser, ReadUser, UpdateUser, UserModel)
-
 	@connection
 	async def get_all(self, session: AsyncSession) -> list[ReadUser]:
 		log.debug("Получение всех записей из таблицы")
@@ -29,4 +26,4 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 		return self.read_schema.model_validate(user_model) if user_model else None
 
 
-user_repo = UserRepo()
+user_repo = UserRepo(CreateUser, ReadUser, UpdateUser, UserModel)

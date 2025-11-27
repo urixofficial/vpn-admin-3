@@ -24,7 +24,7 @@ async def list_transactions(message: Message):
 	text = "Список транзакций:\n-----------------------------------\n"
 	for number, transaction in enumerate(transactions, start=1):
 		user = await user_repo.get(transaction.user_id)
-		line = f"{number:03d}. {transaction.amount}₽ - {user.name}\n"
+		line = f"{number:03d}. {user.name}: {transaction.amount}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 

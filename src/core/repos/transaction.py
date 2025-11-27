@@ -9,8 +9,7 @@ from .base import BaseRepo
 
 
 class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel]):
-	def __init__(self):
-		super().__init__(CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel)
+	pass
 
 
-transaction_repo = TransactionRepo()
+transaction_repo = TransactionRepo(CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel)
