@@ -1,12 +1,13 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from core.schemas.user import UpdateUser
+from core.schemas.transaction import UpdateTransaction
 
-def get_user_control_keyboard():
+
+def get_transaction_control_keyboard():
 	keyboard = ReplyKeyboardBuilder()
-	keyboard.button(text="Список пользователей")
-	keyboard.button(text="Профиль пользователя")
-	keyboard.button(text="Создать пользователя")
+	keyboard.button(text="Список транзакций")
+	keyboard.button(text="Профиль транзакции")
+	keyboard.button(text="Добавить транзакцию")
 	keyboard.button(text="Отмена")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
@@ -21,7 +22,7 @@ def get_profile_keyboard():
 
 def get_update_keyboard():
 	keyboard = ReplyKeyboardBuilder()
-	for key in UpdateUser.model_fields:
+	for key in UpdateTransaction.model_fields:
 		keyboard.button(text=key)
 	keyboard.button(text="Отмена")
 	keyboard.adjust(1)
