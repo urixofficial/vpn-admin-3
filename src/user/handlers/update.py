@@ -2,8 +2,8 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.core.logger import log
-# from src.user.dto import UpdateUserDto
+from core.logger import log
+# from user.dto import UpdateUserDto
 from .states import CrudUserStates
 from .keyboards import get_update_user_keyboard
 

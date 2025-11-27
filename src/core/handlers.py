@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from src.core.logger import log
+from core.logger import log
 
 router = Router()
 

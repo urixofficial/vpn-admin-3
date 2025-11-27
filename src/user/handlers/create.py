@@ -3,9 +3,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
-from src.core.logger import log
-from src.user.dto import CreateUserDto
-from src.user.repo import create_user
+from core.logger import log
+from user.dto import CreateUserDto
+from user.repo import create_user
 from .keyboards import get_cancel_keyboard, get_user_control_keyboard
 from .states import CrudUserStates
 

@@ -1,9 +1,9 @@
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import connection
-from src.models.transaction import TransactionOrm
-from src.transaction.dto import CreateTransaction
+from core.database import connection
+from models.transaction import TransactionOrm
+from transaction.dto import CreateTransaction
 
 @connection
 async def get_transactions(session: AsyncSession) -> list[TransactionOrm]:

@@ -2,8 +2,8 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.core.logger import log
-from src.user.repo import get_users, get_user
+from core.logger import log
+from user.repo import get_users, get_user
 from .keyboards import get_user_control_keyboard, get_cancel_keyboard, get_user_profile_keyboard
 from .states import CrudUserStates
 

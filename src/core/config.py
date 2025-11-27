@@ -2,9 +2,9 @@ from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from src.core.logger import log
+from core.logger import log
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     log.debug("Инициализация настроек")
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", case_sensitive=False)
 
     @property
-    def get_db_url(self):
-        return f"sqlite+aiosqlite:///{BASE_DIR}/{self.DB_PATH}"
+    def db_url(self):
+        return f"sqlite+aiosqlite:///{BASE_DIR / self.DB_PATH}"
 
 settings = Settings()

@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from src.user.dto import UpdateUserDto
+from user.dto import UpdateUserDto
 
 def get_cancel_keyboard():
 	keyboard = ReplyKeyboardBuilder()

@@ -1,10 +1,10 @@
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import connection
-from src.core.logger import log
-from src.user.dto import CreateUserDto, UserDto, UpdateUserDto
-from src.models.user import UserOrm
+from core.database import connection
+from core.logger import log
+from user.dto import CreateUserDto, UserDto, UpdateUserDto
+from models.user import UserOrm
 
 @connection
 async def get_users(session: AsyncSession) -> list[UserDto]:
@@ -19,6 +19,14 @@ async def get_user(user_id: int, session: AsyncSession) -> UserDto | None:
 	log.debug("Получение записи по id={}".format(user_id))
 	user_orm = await session.get(UserOrm, user_id)
 	return UserDto.model_validate(user_orm) if user_orm else None
+
+@connection
+async def get_user_by_name(name: str, session: AsyncSession):
+	log.debug("Получение записи по name={}".format(name))
+	stmt = select(UserOrm).where(UserOrm.name == name)
+	user_orm: UserOrm | None = await session.scalar(stmt)
+	return UserDto.model_validate(user_orm) if user_orm else None
+	
 
 @connection
 async def create_user(user_dto: CreateUserDto, session: AsyncSession) -> UserDto:

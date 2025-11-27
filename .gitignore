@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+.idea/
+src/.env
+src/logs/
+src/data/

@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.core.logger import log
+from core.logger import log
 from .keyboards import get_user_control_keyboard
 
 router = Router(name="user_control_router")
