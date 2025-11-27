@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from core.logger import log
 from telegram.handlers.admin.user_control.states import CrudUserStates
-from core.repos.user import delete_user
+from core.repos.user import user_repo
 from telegram.handlers.admin.user_control.keyboards import (
 	get_confirmation_keyboard,
 	get_user_control_keyboard,
@@ -24,7 +24,7 @@ async def delete_confirmation_ok(message: Message, state: FSMContext):
 	log.debug("Подтверждение удаления получено")
 	data = await state.get_data()
 	user_id = data["user_id"]
-	await delete_user(user_id)
+	await user_repo.delete(user_id)
 	log.debug("Пользователь с id={} успешно удален".format(user_id))
 	await message.answer("Пользователь успешно удален.", reply_markup=get_user_control_keyboard())
 

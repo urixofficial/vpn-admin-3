@@ -5,14 +5,14 @@ from aiogram.types import Message
 from core.logger import log
 # from user.dto import UpdateUser
 from .states import CrudUserStates
-from .keyboards import get_update_user_keyboard
+from .keyboards import get_update_keyboard
 
 router = Router(name="update_user_router")
 
 @router.message(CrudUserStates.show_profile, F.text == "Изменить")
 async def update_user(message: Message, state: FSMContext):
 	log.debug("Обновление пользователя")
-	await message.answer("Изменить свойства пользователя:", reply_markup=get_update_user_keyboard())
+	await message.answer("Изменить свойства пользователя:", reply_markup=get_update_keyboard())
 	await state.set_state(CrudUserStates.update_user)
 
 
@@ -24,5 +24,5 @@ async def update_user(message: Message, state: FSMContext):
 
 
 	# data = await state.get_data()
-	# user_id = data["user_id"]
+	# item_id = data["item_id"]
 

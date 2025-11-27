@@ -11,7 +11,7 @@ class TransactionBase(BaseModel):
 class CreateTransaction(TransactionBase):
 	pass
 
-class Transaction(TransactionBase):
+class ReadTransaction(TransactionBase):
 	id: int
 	created_at: datetime
 	updated_at: datetime

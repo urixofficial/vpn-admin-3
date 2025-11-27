@@ -9,7 +9,7 @@ class CreateUser(BaseModel):
 	name: Annotated[str, MinLen(3), MaxLen(24)]
 	model_config = ConfigDict(from_attributes=True)
 
-class User(CreateUser):
+class ReadUser(CreateUser):
 	balance: int
 	billing_date: date
 	created_at: datetime

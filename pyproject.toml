@@ -21,8 +21,8 @@ dev = [
 ]
 
 [tool.ruff]
-# Set the maximum line length to 79.
 line-length = 79
+indent-style = "tab"
 
 [tool.ruff.format]
 quote-style = "double"
