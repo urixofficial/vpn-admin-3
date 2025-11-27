@@ -6,7 +6,7 @@ from aiogram.types import Message
 from core.logger import log
 from .keyboards import get_user_control_keyboard
 
-router = Router(name="user_control_router")
+router = Router(name="user_control_panel_router")
 
 @router.message(F.text == "Отмена")
 async def cmd_cancel(message: Message, state: FSMContext):
