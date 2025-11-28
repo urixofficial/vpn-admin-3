@@ -12,7 +12,7 @@ class MessageStatus(Enum):
 
 
 class MessageBase(BaseModel):
-	recipient: int
+	chat_id: int
 	text: str
 
 	model_config = ConfigDict(from_attributes=True)
