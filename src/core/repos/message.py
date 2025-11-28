@@ -10,7 +10,7 @@ from core.schemas.message import (
 
 from core.logger import log
 from core.database import connection
-
+from telegram.message_sender import send_message as tg_send_message
 from .base import BaseRepo
 
 
@@ -22,6 +22,12 @@ class MessageRepo(BaseRepo[CreateMessage, ReadMessage, UpdateMessage, MessageMod
 		message_models = await session.execute(query)
 		await session.commit()
 		return [ReadMessage.model_validate(message_model) for message_model in message_models]
+
+	async def send_message(self, create_message: CreateMessage):
+		log.debug("Отправка сообщения пользователю {}".format(create_message.chat_id))
+		message = await self.create(create_message)
+		status = await tg_send_message(message.chat_id, message.text)
+		await self.update(message.id, UpdateMessage(status=status))
 
 
 message_repo = MessageRepo(CreateMessage, ReadMessage, UpdateMessage, MessageModel)
