@@ -17,7 +17,7 @@ async def list_users(message: Message):
 	users = await user_repo.get_all()
 	if not users:
 		log.debug("Список пользователей пуст")
-		await message.answer("Список пользователей пуст")
+		await message.answer("Список пользователей пуст.")
 		return
 	text = "Список пользователей:\n-----------------------------------\n"
 	for number, user in enumerate(users, start=1):

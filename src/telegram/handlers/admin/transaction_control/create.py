@@ -75,6 +75,12 @@ async def create_transaction_step3(message: Message, state: FSMContext):
 		transaction = await transaction_repo.create(create_transaction)
 		log.debug("Запись успешно добавлена: {}".format(transaction))
 		await message.answer("Запись успешно добавлена.", reply_markup=get_transaction_control_keyboard())
+		# await message.bot.send_message(
+		# 	"Оплата подтверждена\n"
+		# 	"-----------------------------------"
+		# 	f"Сумма: {transaction.amount}₽\n"
+		# 	f"Номер транзакции: {transaction.id}"
+		# )
 	except IntegrityError:
 		log.debug("Запись уже существует")
 		await message.answer("Запись уже существует.", reply_markup=get_transaction_control_keyboard())

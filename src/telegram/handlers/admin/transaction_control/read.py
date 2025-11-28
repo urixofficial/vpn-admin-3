@@ -18,8 +18,8 @@ async def list_transactions(message: Message):
 	log.debug("Вывод списка транзакций")
 	transactions = await transaction_repo.get_all()
 	if not transactions:
-		log.debug("Нет записей")
-		await message.answer("Нет записей.")
+		log.debug("Список транзакций пуст")
+		await message.answer("Список транзакций пуст.")
 		return
 	text = "Список транзакций:\n-----------------------------------\n"
 	for number, transaction in enumerate(transactions, start=1):
