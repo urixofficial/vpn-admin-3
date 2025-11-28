@@ -7,7 +7,8 @@ from datetime import datetime, date
 from .base import Base
 
 if TYPE_CHECKING:
-	from core.models.transaction import TransactionModel
+	from .transaction import TransactionModel
+	from .message import MessageModel
 
 
 class UserModel(Base):
@@ -20,4 +21,5 @@ class UserModel(Base):
 	created_at: Mapped[datetime] = mapped_column(default=datetime.now, server_default=func.now())
 	updated_at: Mapped[datetime] = mapped_column(default=datetime.now, server_default=func.now())
 
-	transactions: Mapped[list["TransactionModel"]] = relationship(back_populates="user")
+	transactions: Mapped[list["TransactionModel"]] = relationship(back_populates="users")
+	messages: Mapped[list["MessageModel"]] = relationship(back_populates="users")
