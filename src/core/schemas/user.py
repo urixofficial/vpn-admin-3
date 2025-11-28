@@ -12,6 +12,7 @@ class CreateUser(BaseModel):
 
 
 class ReadUser(CreateUser):
+	is_active: bool
 	balance: int
 	billing_date: date
 	created_at: datetime
@@ -21,6 +22,7 @@ class ReadUser(CreateUser):
 class UpdateUser(BaseModel):
 	id: int | None = None
 	name: Annotated[str, MinLen(3), MaxLen(24)] | None = None
+	is_active: bool | None
 	balance: int | None = None
 	billing_date: date | None = None
 	model_config = ConfigDict(from_attributes=True)
