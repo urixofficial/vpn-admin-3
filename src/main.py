@@ -6,7 +6,7 @@ from telegram.bot import run_bot
 
 
 async def main():
-	log.info("Запуск {} {}".format(settings.APP_NAME, settings.APP_VERSION))
+	log.info("Запуск {} {}".format(settings.app.name, settings.app.version))
 
 	await run_bot()
 

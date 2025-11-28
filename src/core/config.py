@@ -1,22 +1,20 @@
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from core.logger import log
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-class Settings(BaseSettings):
-	log.debug("Инициализация настроек")
+class AppSettings(BaseModel):
+	name: str = Field(default=None, description="Название приложения")
+	version: str = Field(default=None, description="Версия приложения")
 
-	# Общие настройки
-	APP_NAME: str = Field(default=None, description="Название приложения")
-	APP_VERSION: str = Field(default=None, description="Версия приложения")
 
-	# Database
-	DB_PATH: str = Field(default=None, description="Путь к базе данных")
-	DB_ECHO: bool = Field(default=False, description="Вывод SQL-команд в терминал")
+class DatabaseSettings(BaseModel):
+	path: str = Field(default=None, description="Путь к базе данных")
+	echo: bool = Field(default=False, description="Вывод SQL-команд в терминал")
 
 	naming_convention: dict[str, str] = {
 		"ix": "ix_%(column_0_label)s",
@@ -26,15 +24,29 @@ class Settings(BaseSettings):
 		"pk": "pk_%(table_name)s",
 	}
 
-	# Telegram
-	TELEGRAM_TOKEN: str = Field(default=None, description="Telegram Token")
-	TELEGRAM_ADMIN_ID: int = Field(default=None, description="Admin ID")
-
-	model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", case_sensitive=False)
-
 	@property
-	def db_url(self):
-		return f"sqlite+aiosqlite:///{BASE_DIR / self.DB_PATH}"
+	def url(self):
+		return f"sqlite+aiosqlite:///{BASE_DIR / self.path}"
+
+
+class TelegramSettings(BaseModel):
+	token: str = Field(default=None, description="Telegram Token")
+	admin_id: int = Field(default=None, description="Admin ID")
+
+
+class Settings(BaseSettings):
+	log.debug("Инициализация настроек")
+
+	model_config = SettingsConfigDict(
+		env_file=(".env.template", ".env"),
+		case_sensitive=False,
+		env_nested_delimiter="__",
+		# env_prefix="CONFIG__",
+	)
+
+	app: AppSettings = AppSettings()
+	db: DatabaseSettings = DatabaseSettings()
+	tg: TelegramSettings = TelegramSettings()
 
 
 settings = Settings()

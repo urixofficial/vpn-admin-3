@@ -11,5 +11,5 @@ async def run_bot():
 	dp = Dispatcher()
 	dp.include_router(main_router)
 
-	bot = Bot(settings.TELEGRAM_TOKEN)
+	bot = Bot(settings.tg.token)
 	await dp.start_polling(bot)
