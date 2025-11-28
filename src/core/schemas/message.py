@@ -8,7 +8,8 @@ class MessageStatus(Enum):
 	SENT = "Отправлено"
 	CHAT_NOT_EXIST = "Чат не существует"
 	BOT_BLOCKED = "Бот заблокирован"
-	TELEGRAM_ERROR = "Ошибка Telegram API"
+	API_ERROR = "Ошибка Telegram API"
+	UNKNOWN_ERROR = "Неизвестная ошибка"
 
 
 class MessageBase(BaseModel):

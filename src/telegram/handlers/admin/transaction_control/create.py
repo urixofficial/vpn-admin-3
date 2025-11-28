@@ -4,9 +4,11 @@ from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
 from core.logger import log
+from core.schemas.message import CreateMessage
 from core.schemas.transaction import CreateTransaction
 from core.repos.transaction import transaction_repo
 from core.repos.user import user_repo
+from telegram.message_handler import message_handler
 
 from ..keyboards import get_cancel_keyboard
 from .keyboards import get_transaction_control_keyboard
@@ -75,12 +77,14 @@ async def create_transaction_step3(message: Message, state: FSMContext):
 		transaction = await transaction_repo.create(create_transaction)
 		log.debug("Запись успешно добавлена: {}".format(transaction))
 		await message.answer("Запись успешно добавлена.", reply_markup=get_transaction_control_keyboard())
-		# await message.bot.send_message(
-		# 	"Оплата подтверждена\n"
-		# 	"-----------------------------------"
-		# 	f"Сумма: {transaction.amount}₽\n"
-		# 	f"Номер транзакции: {transaction.id}"
-		# )
+		text = (
+			"Оплата подтверждена\n"
+			"-----------------------------------\n"
+			f"Сумма: {transaction.amount}₽\n"
+			f"Номер транзакции: {transaction.id:03d}"
+		)
+		create_message = CreateMessage(chat_id=transaction.user_id, text=text)
+		await message_handler.handle_message(create_message, message.bot)
 	except IntegrityError:
 		log.debug("Запись уже существует")
 		await message.answer("Запись уже существует.", reply_markup=get_transaction_control_keyboard())
