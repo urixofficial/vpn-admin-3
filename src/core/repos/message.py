@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.message import MessageModel
-from core.schemas.messages import (
+from core.schemas.message import (
 	CreateMessage,
 	ReadMessage,
 	UpdateMessage,
@@ -18,7 +18,7 @@ class MessageRepo(BaseRepo[CreateMessage, ReadMessage, UpdateMessage, MessageMod
 	@connection
 	async def get_by_user(self, user_id: int, session: AsyncSession) -> list[ReadMessage]:
 		log.debug("Получение списка сообщений по пользователю")
-		query = select(MessageModel).where(MessageModel.recipient == user_id).order_by(MessageModel.id.desc())
+		query = select(MessageModel).where(MessageModel.chat_id == user_id).order_by(MessageModel.id.desc())
 		message_models = await session.execute(query)
 		await session.commit()
 		return [ReadMessage.model_validate(message_model) for message_model in message_models]

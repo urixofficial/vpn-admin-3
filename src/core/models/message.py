@@ -4,6 +4,8 @@ from sqlalchemy import func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
+from core.schemas.message import MessageStatus
+
 from .base import Base
 
 if TYPE_CHECKING:
@@ -13,8 +15,11 @@ if TYPE_CHECKING:
 class MessageModel(Base):
 	__tablename__ = "messages"
 	id: Mapped[int] = mapped_column(primary_key=True)
-	recipient: Mapped[int] = mapped_column(ForeignKey("users.id"))
+	chat_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 	text: Mapped[int]
+	status: Mapped[MessageStatus] = mapped_column(
+		default=MessageStatus.PENDING, server_default=MessageStatus.PENDING.value
+	)
 	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 

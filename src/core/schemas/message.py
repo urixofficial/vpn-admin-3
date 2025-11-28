@@ -13,7 +13,7 @@ class MessageStatus(Enum):
 
 class MessageBase(BaseModel):
 	recipient: int
-	text: int
+	text: str
 
 	model_config = ConfigDict(from_attributes=True)
 
