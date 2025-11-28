@@ -11,6 +11,5 @@ wheels/
 
 .idea/
 src/.env
-src/logs/
 *.log
-src/data/
+*.db
