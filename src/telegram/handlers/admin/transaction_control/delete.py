@@ -3,7 +3,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from core.logger import log
+from core.repos.message import message_repo
 from core.repos.transaction import transaction_repo
+from core.schemas.message import CreateMessage
 
 from .states import TransactionCrudStates
 from ..keyboards import get_confirmation_keyboard
@@ -25,9 +27,23 @@ async def delete_confirmation_ok(message: Message, state: FSMContext):
 	log.debug("Подтверждение удаления получено")
 	data = await state.get_data()
 	transaction_id = data["transaction_id"]
-	await transaction_repo.delete(transaction_id)
-	log.debug("Транзакция успешно удалена: {}".format(transaction_id))
-	await message.answer("Транзакция успешно удалена.", reply_markup=get_transaction_control_keyboard())
+	try:
+		transaction = await transaction_repo.delete(transaction_id)
+		log.debug("Транзакция успешно удалена: {}".format(transaction_id))
+		await message.answer("Транзакция успешно удалена.", reply_markup=get_transaction_control_keyboard())
+		text = (
+			"Оплата отменена\n"
+			"-----------------------------------\n"
+			f"Сумма: {transaction.amount}₽\n"
+			f"Номер транзакции: {transaction.id:03d}"
+		)
+		user_notification = CreateMessage(chat_id=transaction.user_id, text=text)
+		await message_repo.send_message(user_notification)
+	except Exception as e:
+		log.error("Ошибка: {}".format(e))
+		await message.answer("Неизвестная ошибка.", reply_markup=get_transaction_control_keyboard())
+		# raise
+	await state.clear()
 
 
 @router.message(TransactionCrudStates.delete_confirmation, F.text == "Нет")

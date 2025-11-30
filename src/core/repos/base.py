@@ -63,10 +63,11 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 		return self.read_schema.model_validate(item_model)
 
 	@connection
-	async def delete(self, item_id: int, session: AsyncSession) -> None:
+	async def delete(self, item_id: int, session: AsyncSession) -> ReadSchema:
 		log.debug("Удаление записи по id={}".format(item_id))
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
 			raise Exception("Запись с id={} не найдена".format(item_id))
 		await session.delete(item_model)
 		await session.commit()
+		return self.read_schema.model_validate(item_model)

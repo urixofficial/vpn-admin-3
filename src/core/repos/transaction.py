@@ -40,7 +40,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		return ReadTransaction.model_validate(transaction_model)
 
 	@connection
-	async def delete(self, transaction_id: int, session: AsyncSession) -> None:
+	async def delete(self, transaction_id: int, session: AsyncSession) -> ReadTransaction:
 		log.debug("Удаление транзакции {}. Обновление баланса пользователя".format(transaction_id))
 		transaction_model = await session.get(self.model, transaction_id)
 		if not transaction_model:
@@ -49,6 +49,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		user_model = await session.get(UserModel, transaction_model.user_id)
 		user_model.balance -= transaction_model.amount
 		await session.commit()
+		return ReadTransaction.model_validate(transaction_model)
 
 
 transaction_repo = TransactionRepo(CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel)

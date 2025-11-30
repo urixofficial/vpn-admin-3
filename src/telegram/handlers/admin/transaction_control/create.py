@@ -83,8 +83,8 @@ async def create_transaction_step3(message: Message, state: FSMContext):
 			f"Сумма: {transaction.amount}₽\n"
 			f"Номер транзакции: {transaction.id:03d}"
 		)
-		create_message = CreateMessage(chat_id=transaction.user_id, text=text)
-		await message_repo.send_message(create_message)
+		user_notification = CreateMessage(chat_id=transaction.user_id, text=text)
+		await message_repo.send_message(user_notification)
 	except IntegrityError:
 		log.debug("Запись уже существует")
 		await message.answer("Запись уже существует.", reply_markup=get_transaction_control_keyboard())

@@ -22,9 +22,9 @@ async def list_transactions(message: Message):
 		await message.answer("Список транзакций пуст.")
 		return
 	text = "Список транзакций:\n-----------------------------------\n"
-	for number, transaction in enumerate(transactions, start=1):
+	for transaction in transactions:
 		user = await user_repo.get(transaction.user_id)
-		line = f"{number:03d}. {user.name}: {transaction.amount}₽\n"
+		line = f"{transaction.id:03d}. {user.name}: {transaction.amount}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 
@@ -59,7 +59,7 @@ async def show_user_step2(message: Message, state: FSMContext):
 	text = (
 		f"Транзакция {transaction.id:03d}\n"
 		f"-----------------------------------\n"
-		f"Сумма: {transaction.amount}\n"
+		f"Сумма: {transaction.amount}₽\n"
 		f"Пользователь: {user.name}\n"
 		f"Добавлена: {transaction.created_at.date()}\n"
 		f"Обновлена: {transaction.updated_at.date()}"
