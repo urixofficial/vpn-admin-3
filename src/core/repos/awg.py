@@ -1,5 +1,3 @@
-import subprocess
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +17,7 @@ from vpn.awg.utils import (
 	create_user_config,
 	get_free_ip,
 	generate_key_pair,
+	sync_server_config,
 )
 from core.models import UserModel
 from .base import BaseRepo
@@ -34,7 +33,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 
 	async def update_server_config(self) -> bool:
 		# генерация конфига
-		interface_config = create_server_interface_config()
+		interface_config = create_server_interface_config(settings.awg)
 		active_awg_records = await self.get_active()
 		peers_config = create_server_peers_config(active_awg_records)
 		server_config = interface_config + peers_config
@@ -44,23 +43,11 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			log.error("Ошибка сохранения конфигурации сервера в файл")
 			return False
 
-		# применение конфига
-		try:
-			subprocess.run(
-				["sudo", "awg", "syncconf", settings.awg.interface, settings.awg.config_path],
-				check=True,
-				capture_output=True,
-				text=True,
-			)
-			log.info("Конфигурация сервера успешно синхронизирована.")
-			return True
-
-		except Exception as e:
-			log.error("Ошибка синхронизации конфигурации сервера: {}".format(e))
-			return False
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
+		return True
 
 	async def add_config(self, user_id: int) -> str | None:
-		log.debug("Создание новой конфигурации AWG")
+		log.debug("Создание новой конфигурации AWG для пользователя {}".format(user_id))
 		# Получение свободного IP
 		awg_records = await self.get_all()
 		user_ip = get_free_ip(awg_records, settings.awg.subnet, settings.awg.mask)
@@ -86,7 +73,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		# Генерация клиентской конфигурации
 		user_config = create_user_config(awg_record, settings.awg)
 
-		log.info(f"Конфигурация AWG для пользователя {user_id} успешно создана")
+		log.info("OK")
 		return user_config
 
 	async def del_config(self, user_id: int) -> bool:

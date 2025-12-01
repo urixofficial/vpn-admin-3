@@ -129,3 +129,20 @@ def create_server_peers_config(awg_records: list[ReadAwgRecord]) -> str:
 		)
 		peers_section += peer_section
 	return peers_section
+
+
+def sync_server_config(interface: str, config_path: str):
+	log.debug("Синхронизация интерфейса {} с конфигурации: {}".format(interface, config_path))
+	try:
+		subprocess.run(
+			["sudo", "awg", "syncconf", interface, config_path],
+			check=True,
+			capture_output=True,
+			text=True,
+		)
+		log.info("OK")
+		return True
+
+	except Exception as e:
+		log.error("Ошибка синхронизации конфигурации сервера: {}".format(e))
+		return False
