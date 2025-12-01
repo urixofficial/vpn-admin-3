@@ -1,25 +1,28 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from enum import Enum
 
 
-class AwgBase(BaseModel):
+class AwgRecordBase(BaseModel):
 	id: int
+	ip: str
+	mask: int
 	public_key: str
 	private_key: str
 
 	model_config = ConfigDict(from_attributes=True)
 
 
-class CreateAwg(AwgBase):
+class CreateAwgRecord(AwgRecordBase):
 	pass
 
 
-class ReadAwg(AwgBase):
+class ReadAwgRecord(AwgRecordBase):
 	created_at: datetime
 	updated_at: datetime
 
 
-class UpdateMessage(BaseModel):
-	public_key: str
-	private_key: str
+class UpdateAwgRecord(BaseModel):
+	ip: str | None = None
+	mask: int | None = None
+	public_key: str | None = None
+	private_key: str | None = None
