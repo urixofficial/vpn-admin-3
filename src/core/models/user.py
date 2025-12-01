@@ -9,6 +9,7 @@ from .base import Base
 if TYPE_CHECKING:
 	from .transaction import TransactionModel
 	from .message import MessageModel
+	from .awg import AwgRecordModel
 
 
 class UserModel(Base):
@@ -24,3 +25,4 @@ class UserModel(Base):
 
 	transactions: Mapped[list["TransactionModel"]] = relationship(back_populates="user")
 	messages: Mapped[list["MessageModel"]] = relationship(back_populates="user")
+	awg: Mapped[list["AwgRecordModel"]] = relationship(back_populates="user")

@@ -19,6 +19,7 @@ def save_file(data: str, path: str) -> bool:
 
 
 def restart_interface(interface: str) -> bool:
+	log.debug("Перезапуск интерфейса {}".format(interface))
 	try:
 		subprocess.run(
 			["sudo", "awg-quick", "down", interface],
@@ -32,7 +33,7 @@ def restart_interface(interface: str) -> bool:
 			capture_output=True,
 			text=True,
 		)
-		log.info("Интерфейс {} перезапущен.".format(interface))
+		log.info("OK")
 		return True
 	except Exception as e:
 		log.error("Ошибка перезапуска интерфейса {}: {}".format(interface, e))
@@ -81,7 +82,7 @@ def create_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> st
 		f"[Interface]\n"
 		f"PrivateKey = {awg_record.private_key}\n"
 		f"Address = {awg_record.ip}/{awg_record.mask}\n"
-		f"DNS = {awg_config.dns}\n\n"
+		f"DNS = {awg_config.dns}\n"
 		f"Jc = {awg_config.jc}\n"
 		f"Jmin = {awg_config.jmin}\n"
 		f"Jmax = {awg_config.jmax}\n"

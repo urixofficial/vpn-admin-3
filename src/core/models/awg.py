@@ -20,4 +20,4 @@ class AwgRecordModel(Base):
 	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 
-	user: Mapped["UserModel"] = relationship(back_populates="transactions")
+	user: Mapped["UserModel"] = relationship(back_populates="awg")
