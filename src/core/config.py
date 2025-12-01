@@ -40,6 +40,26 @@ class BillingSettings(BaseModel):
 	minute: int = Field(default=0, description="Время проверки биллинга. Минуты")
 
 
+class AwgSettings(BaseModel):
+	server_ip: str = Field(default=None)
+	server_port: int = Field(default=None)
+	subnet: str = Field(default=None)
+	dns: str = Field(default=None)
+	server_public_key: str = Field(default=None)
+	server_private_key: str = Field(default=None)
+	config_path: str = Field(default="/etc/amnezia/amneziawg/awg0.conf")
+	interface: str = Field(default=None)
+	jc: int = Field(default=None)
+	jmin: int = Field(default=None)
+	jmax: int = Field(default=None)
+	s1: int = Field(default=None)
+	s2: int = Field(default=None)
+	h1: int = Field(default=None)
+	h2: int = Field(default=None)
+	h3: int = Field(default=None)
+	h4: int = Field(default=None)
+
+
 class Settings(BaseSettings):
 	log.debug("Инициализация настроек")
 
@@ -47,13 +67,13 @@ class Settings(BaseSettings):
 		env_file=(".env.template", ".env"),
 		case_sensitive=False,
 		env_nested_delimiter="__",
-		# env_prefix="CONFIG__",
 	)
 
 	app: AppSettings = AppSettings()
 	db: DatabaseSettings = DatabaseSettings()
 	tg: TelegramSettings = TelegramSettings()
 	billing: BillingSettings = BillingSettings()
+	awg: AwgSettings = AwgSettings()
 
 
 settings = Settings()
