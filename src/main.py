@@ -2,15 +2,12 @@ import asyncio
 
 from core.config import settings
 from core.logger import log
-from core.tasks.debeting import debiting_funds
+from core.tasks.debiting import debiting_funds
+
 from core.tasks.scheduler import scheduler, start_scheduler, stop_scheduler
 
 from telegram.bot_init import bot
 from telegram.bot import run_bot
-
-
-def test_task():
-	log.debug("Тестовая задача выполнена")
 
 
 def setup_scheduler():
