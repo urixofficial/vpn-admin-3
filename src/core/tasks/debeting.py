@@ -14,7 +14,8 @@ async def debiting_funds():
 	counter = 0
 	for user in users:
 		if user.balance < daily_payment:
-			await user_repo.update(user.id, UpdateUser(is_active=False))
+			# await user_repo.update(user.id, UpdateUser(is_active=False))
+			await user_repo.block(user.id)
 			log.info("Учетная запись {} ({}) заблокирована".format(user.name, user.id))
 			text = "Ваша учетная запись заблокирована! Для возобновления сервиса внесите оплату."
 			notification = CreateMessage(chat_id=user.id, text=text)

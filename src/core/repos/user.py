@@ -33,5 +33,15 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 		item_models = result.scalars().all()
 		return [self.read_schema.model_validate(item_model) for item_model in item_models]
 
+	async def block(self, user_id: int):
+		log("Блокировка пользователя {}".format(user_id))
+		await self.update(UpdateUser(is_active=False))
+		# блокировка в интерфейсе AmneziaWG
+
+	async def unblock(self, user_id: int):
+		log("Разблокировка пользователя {}".format(user_id))
+		await self.update(UpdateUser(is_active=True))
+		# блокировка в интерфейсе AmneziaWG
+
 
 user_repo = UserRepo(CreateUser, ReadUser, UpdateUser, UserModel)
