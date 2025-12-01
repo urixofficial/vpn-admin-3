@@ -44,6 +44,7 @@ class AwgSettings(BaseModel):
 	server_ip: str = Field(default=None)
 	server_port: int = Field(default=None)
 	subnet: str = Field(default=None)
+	mask: int = Field(default=None)
 	dns: str = Field(default=None)
 	server_public_key: str = Field(default=None)
 	server_private_key: str = Field(default=None)
