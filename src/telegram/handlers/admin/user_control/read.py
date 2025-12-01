@@ -19,9 +19,9 @@ async def list_users(message: Message):
 		log.debug("Список пользователей пуст")
 		await message.answer("Список пользователей пуст.")
 		return
-	text = "Список пользователей:\n-----------------------------------\n"
+	text = "Список пользователей:\n--------------------------------------------\n"
 	for number, user in enumerate(users, start=1):
-		line = f"{number:02d}. {user.name} ({user.id})\n"
+		line = f"{'✅' if user.is_active else '🚫'} {user.name} ({user.id}) - {user.balance}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_user_control_keyboard())
 
@@ -56,9 +56,10 @@ async def show_user_step2(message: Message, state: FSMContext):
 	await state.update_data(user_id=user_id)
 	text = (
 		f"Пользователь {user.name}\n"
-		"-----------------------------------\n"
+		"--------------------------------------------\n"
 		f"ID: {user.id}\n"
-		f"Баланс: {user.balance}\n"
+		f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\n"
+		f"Баланс: {user.balance}₽\n"
 		f"Дата расчета: {user.billing_date}\n"
 		f"Создан: {user.created_at.date()}\n"
 		f"Обновлен: {user.updated_at.date()}"

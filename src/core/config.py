@@ -34,6 +34,12 @@ class TelegramSettings(BaseModel):
 	admin_id: int = Field(default=None, description="Admin ID")
 
 
+class BillingSettings(BaseModel):
+	daily_payment: int = Field(default=None, description="Сумма ежедневного списания")
+	hour: int = Field(default=12, description="Время проверки биллинга. Часы")
+	minute: int = Field(default=0, description="Время проверки биллинга. Минуты")
+
+
 class Settings(BaseSettings):
 	log.debug("Инициализация настроек")
 
@@ -47,6 +53,7 @@ class Settings(BaseSettings):
 	app: AppSettings = AppSettings()
 	db: DatabaseSettings = DatabaseSettings()
 	tg: TelegramSettings = TelegramSettings()
+	billing: BillingSettings = BillingSettings()
 
 
 settings = Settings()

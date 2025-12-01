@@ -22,7 +22,7 @@ class ReadUser(CreateUser):
 class UpdateUser(BaseModel):
 	id: int | None = None
 	name: Annotated[str, MinLen(3), MaxLen(24)] | None = None
-	is_active: bool | None
+	is_active: bool | None = None
 	balance: int | None = None
 	billing_date: date | None = None
 	model_config = ConfigDict(from_attributes=True)

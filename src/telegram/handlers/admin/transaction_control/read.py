@@ -21,7 +21,7 @@ async def list_transactions(message: Message):
 		log.debug("Список транзакций пуст")
 		await message.answer("Список транзакций пуст.")
 		return
-	text = "Список транзакций:\n-----------------------------------\n"
+	text = "Список транзакций:\n--------------------------------------------\n"
 	for transaction in transactions:
 		user = await user_repo.get(transaction.user_id)
 		line = f"{transaction.id:03d}. {user.name}: {transaction.amount}₽\n"
@@ -58,7 +58,7 @@ async def show_user_step2(message: Message, state: FSMContext):
 	await state.update_data(transaction_id=transaction_id)
 	text = (
 		f"Транзакция {transaction.id:03d}\n"
-		f"-----------------------------------\n"
+		f"--------------------------------------------\n"
 		f"Сумма: {transaction.amount}₽\n"
 		f"Пользователь: {user.name}\n"
 		f"Добавлена: {transaction.created_at.date()}\n"
