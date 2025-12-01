@@ -20,10 +20,12 @@ from vpn.awg.utils import (
 	sync_server_config,
 )
 from core.models import UserModel
+from core.database import connection
 from .base import BaseRepo
 
 
 class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecordModel]):
+	@connection
 	async def get_active(self, session: AsyncSession) -> list[ReadAwgRecord]:
 		log.debug("Получение AWG-записей только для активных пользователей")
 		query = select(AwgRecordModel).join(UserModel, AwgRecordModel.id == UserModel.id).where(UserModel.is_active)
@@ -59,7 +61,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		private_key, public_key = generate_key_pair()
 
 		# Формирование записи для таблицы awg
-		awg_record = CreateAwgRecord(id=user_id, public_key=public_key, private_key=private_key, ip=user_ip)
+		awg_record = CreateAwgRecord(id=user_id, ip=user_ip, mask=32, public_key=public_key, private_key=private_key)
 
 		# Создание записи в таблице AWG
 		awg_record = await self.create(awg_record)
