@@ -1,5 +1,8 @@
 import subprocess
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core.models.awg import AwgRecordModel
 from core.schemas.awg import (
 	CreateAwgRecord,
@@ -17,16 +20,22 @@ from vpn.awg.utils import (
 	get_free_ip,
 	generate_key_pair,
 )
+from core.models import UserModel
 from .base import BaseRepo
-from .user import user_repo
 
 
 class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecordModel]):
+	async def get_active(self, session: AsyncSession) -> list[ReadAwgRecord]:
+		log.debug("Получение AWG-записей только для активных пользователей")
+		query = select(AwgRecordModel).join(UserModel, AwgRecordModel.id == UserModel.id).where(UserModel.is_active)
+		result = await session.execute(query)
+		records = result.scalars().all()
+		return [self.read_schema.model_validate(record) for record in records]
+
 	async def update_server_config(self) -> bool:
 		# генерация конфига
 		interface_config = create_server_interface_config()
-		active_users = await user_repo.get_active()
-		active_awg_records = [await self.get(user.id) for user in active_users if user.is_active]
+		active_awg_records = await self.get_active()
 		peers_config = create_server_peers_config(active_awg_records)
 		server_config = interface_config + peers_config
 
@@ -107,11 +116,10 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		log.debug("Получение конфигурации AWG для пользователя {}".format(user_id))
 
 		try:
-
 			awg_record = await self.get(user_id)
-			if awg_record: # если есть запись в таблице awg
+			if awg_record:  # если есть запись в таблице awg
 				user_config = create_user_config(awg_record, settings.awg)
-			else: # Создание новой записи
+			else:  # Создание новой записи
 				user_config = await self.add_config(user_id)
 			return user_config
 
