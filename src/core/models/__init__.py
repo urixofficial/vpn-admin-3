@@ -1,4 +1,4 @@
-__all__ = {"Base", "UserModel", "TransactionModel", "MessageModel"}
+__all__ = {"Base", "UserModel", "TransactionModel", "MessageModel", "AwgRecordModel"}
 
 from .base import Base
 from .user import UserModel
