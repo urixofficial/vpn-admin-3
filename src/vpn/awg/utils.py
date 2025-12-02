@@ -65,7 +65,7 @@ def generate_key_pair() -> tuple[str, str]:
 
 def get_free_ip(awg_records: list[ReadAwgRecord], subnet: str, mask: int) -> str | None:
 	log.debug("Поиск свободного IP-адреса")
-	subnet = ip_network(f"{subnet}0/{mask}")
+	subnet = ip_network(f"{subnet}/{mask}")
 	used_ips = {awg_record.ip for awg_record in awg_records}
 	for ip in subnet.hosts():
 		ip_str = str(ip)

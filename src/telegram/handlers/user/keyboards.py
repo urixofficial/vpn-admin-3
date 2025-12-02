@@ -12,6 +12,7 @@ def get_user_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Статус")
 	keyboard.button(text="Инструкции")
+	keyboard.button(text="Файл конфигурации AWG")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
 
