@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
+from core.config import settings
 from core.logger import log
 from core.schemas.user import CreateUser
 from core.repos.user import user_repo
@@ -13,7 +14,7 @@ from .states import UserCrudStates
 router = Router(name="create_user_router")
 
 
-@router.message(F.text == "Создать пользователя")
+@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Создать пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
 	log.debug(
 		"Пользователь {} ({}) запустил добавление пользователя. Запрос ID".format(
@@ -24,7 +25,7 @@ async def create_user_step1(message: Message, state: FSMContext):
 	await state.set_state(UserCrudStates.create_enter_id)
 
 
-@router.message(UserCrudStates.create_enter_id)
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.create_enter_id)
 async def create_user_step2(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	try:
@@ -50,7 +51,7 @@ async def create_user_step2(message: Message, state: FSMContext):
 	await state.set_state(UserCrudStates.create_enter_name)
 
 
-@router.message(UserCrudStates.create_enter_name)
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.create_enter_name)
 async def create_user_step3(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	name = message.text

@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.exc import IntegrityError
 
+from core.config import settings
 from core.logger import log
 from core.repos.message import message_repo
 from core.schemas.message import CreateMessage
@@ -17,7 +18,7 @@ from .states import TransactionCrudStates
 router = Router(name="create_user_router")
 
 
-@router.message(F.text == "Добавить транзакцию")
+@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Добавить транзакцию")
 async def create_transaction_step1(message: Message, state: FSMContext):
 	log.debug(
 		"Пользователь {} ({}) запустил создание транзакции. Запрос ID пользователя".format(
@@ -28,7 +29,7 @@ async def create_transaction_step1(message: Message, state: FSMContext):
 	await state.set_state(TransactionCrudStates.create_enter_user_id)
 
 
-@router.message(TransactionCrudStates.create_enter_user_id)
+@router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.create_enter_user_id)
 async def create_transaction_step2(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	try:
@@ -56,7 +57,7 @@ async def create_transaction_step2(message: Message, state: FSMContext):
 	await state.set_state(TransactionCrudStates.create_enter_amount)
 
 
-@router.message(TransactionCrudStates.create_enter_amount)
+@router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.create_enter_amount)
 async def create_transaction_step3(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	try:

@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from core.config import settings
 from core.logger import log
 from core.repos.transaction import transaction_repo
 from core.repos.user import user_repo
@@ -13,7 +14,7 @@ from .states import TransactionCrudStates
 router = Router(name="read_transaction_router")
 
 
-@router.message(F.text == "Список транзакций")
+@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список транзакций")
 async def list_transactions(message: Message):
 	log.debug("Вывод списка транзакций")
 	transactions = await transaction_repo.get_all()
@@ -36,7 +37,7 @@ async def show_user_step1(message: Message, state: FSMContext):
 	await state.set_state(TransactionCrudStates.show_enter_id)
 
 
-@router.message(TransactionCrudStates.show_enter_id)
+@router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.show_enter_id)
 async def show_user_step2(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	try:

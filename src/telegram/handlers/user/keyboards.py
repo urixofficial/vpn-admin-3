@@ -8,6 +8,21 @@ def get_start_keyboard():
 	return keyboard.as_markup(resize_keyboard=True)
 
 
+def get_cancel_keyboard():
+	keyboard = ReplyKeyboardBuilder()
+	keyboard.button(text="Отмена")
+	keyboard.adjust(1)
+	return keyboard.as_markup(resize_keyboard=True)
+
+
+def get_confirmation_keyboard():
+	keyboard = ReplyKeyboardBuilder()
+	keyboard.button(text="Да")
+	keyboard.button(text="Нет")
+	keyboard.adjust(1)
+	return keyboard.as_markup(resize_keyboard=True)
+
+
 def get_user_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Статус")
