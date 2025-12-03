@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 def get_start_keyboard():
 	keyboard = ReplyKeyboardBuilder()
-	keyboard.button(text="Зарегистрироваться")
+	keyboard.button(text="Регистрация")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
 
@@ -19,7 +19,7 @@ def get_confirmation_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Да")
 	keyboard.button(text="Нет")
-	keyboard.adjust(1)
+	keyboard.adjust(2)
 	return keyboard.as_markup(resize_keyboard=True)
 
 

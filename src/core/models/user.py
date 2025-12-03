@@ -22,6 +22,18 @@ class UserModel(Base):
 	created_at: Mapped[datetime] = mapped_column(default=datetime.now, server_default=func.now())
 	updated_at: Mapped[datetime] = mapped_column(default=datetime.now, server_default=func.now())
 
-	transactions: Mapped[list["TransactionModel"]] = relationship(back_populates="user")
-	messages: Mapped[list["MessageModel"]] = relationship(back_populates="user")
-	awg: Mapped[list["AwgRecordModel"]] = relationship(back_populates="user")
+	transactions: Mapped[list["TransactionModel"]] = relationship(
+		back_populates="user",
+		cascade="all, delete",
+		passive_deletes=True,
+	)
+	messages: Mapped[list["MessageModel"]] = relationship(
+		back_populates="user",
+		cascade="all, delete",
+		passive_deletes=True,
+	)
+	awg: Mapped[list["AwgRecordModel"]] = relationship(
+		back_populates="user",
+		cascade="all, delete",
+		passive_deletes=True,
+	)

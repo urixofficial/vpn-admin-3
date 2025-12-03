@@ -25,7 +25,8 @@ async def list_transactions(message: Message):
 	text = "Список транзакций:\n--------------------------------------------\n"
 	for transaction in transactions:
 		user = await user_repo.get(transaction.user_id)
-		line = f"{transaction.id:03d}. {user.name}: {transaction.amount}₽\n"
+		name = user.name if user else transaction.user_id
+		line = f"{transaction.id:03d}. {name}: {transaction.amount}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 
@@ -38,7 +39,7 @@ async def show_user_step1(message: Message, state: FSMContext):
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.show_enter_id)
-async def show_user_step2(message: Message, state: FSMContext):
+async def show_transaction_step2(message: Message, state: FSMContext):
 	log.debug("Получено значение: {}".format(message.text))
 	try:
 		transaction_id = int(message.text)
@@ -55,13 +56,14 @@ async def show_user_step2(message: Message, state: FSMContext):
 		log.debug("Запись не найдена: {}. Повторный запрос")
 		await message.answer("Запись не найдена. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
-	user = await user_repo.get(transaction.user_id)
 	await state.update_data(transaction_id=transaction_id)
+	user = await user_repo.get(transaction.user_id)
+	name = user.name if user else transaction.user_id
 	text = (
 		f"Транзакция {transaction.id:03d}\n"
 		f"--------------------------------------------\n"
 		f"Сумма: {transaction.amount}₽\n"
-		f"Пользователь: {user.name}\n"
+		f"Пользователь: {name}\n"
 		f"Добавлена: {transaction.created_at.date()}\n"
 		f"Обновлена: {transaction.updated_at.date()}"
 	)
