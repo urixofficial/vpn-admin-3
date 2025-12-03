@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class AwgRecordModel(Base):
 	__tablename__ = "awg"
-	id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+	id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
 	ip: Mapped[str]
 	mask: Mapped[int]
 	public_key: Mapped[str]

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class TransactionModel(Base):
 	__tablename__ = "transactions"
 	id: Mapped[int] = mapped_column(primary_key=True)
-	user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+	user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 	amount: Mapped[int]
 	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
 	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())

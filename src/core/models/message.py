@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class MessageModel(Base):
 	__tablename__ = "messages"
 	id: Mapped[int] = mapped_column(primary_key=True)
-	chat_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-	text: Mapped[int]
+	chat_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+	text: Mapped[str]
 	status: Mapped[MessageStatus] = mapped_column(
 		default=MessageStatus.PENDING, server_default=MessageStatus.PENDING.value
 	)
