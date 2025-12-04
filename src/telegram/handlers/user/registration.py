@@ -4,7 +4,9 @@ from aiogram.types import Message
 
 from core.config import settings
 from core.logger import log
+from core.repos.registration import registration_repo
 from core.repos.user import user_repo
+from core.schemas.registration import CreateRegistration
 from telegram.handlers.user.keyboards import get_cancel_keyboard, get_confirmation_keyboard, get_user_keyboard
 from telegram.handlers.user.states import RegistrationStates
 
@@ -34,6 +36,7 @@ async def registration_step2(message: Message, state: FSMContext):
 		log.debug("Некорректный ввод. Повторный запрос")
 		await message.answer("Имя не уникально. Попробуйте еще раз:")
 		return
+	await state.update_data(name=name)
 	text = "Отправить запрос администратору?"
 	await message.answer(text, reply_markup=get_confirmation_keyboard())
 	await state.set_state(RegistrationStates.confirmation)
@@ -42,19 +45,28 @@ async def registration_step2(message: Message, state: FSMContext):
 @router.message(RegistrationStates.confirmation, F.text == "Да")
 async def registration_confirmation_yes(message: Message, state: FSMContext):
 	log.debug("Подтверждение получено")
-	await message.bot.send_message(
+	data = await state.get_data()
+	name = data["name"]
+	admin_message = await message.bot.send_message(
 		chat_id=settings.tg.admin_id,
-		text=f"Пользователь {message.from_user.full_name} ({message.from_user.id}) отправил запрос на регистрацию.\n"
+		text=f"Пользователь {name} ({message.from_user.id}) отправил запрос на регистрацию.\n"
 		f"----------------------------------------\n"
 		f"Подтвердить?",
 		reply_markup=get_confirmation_keyboard(),
 	)
-	await message.answer("Запрос на регистрацию отправлен")
+	registration_record = CreateRegistration(
+		id=admin_message.message_id,
+		user_id=message.from_user.id,
+		username=name,
+		full_name=message.from_user.full_name,
+	)
+	await registration_repo.create(registration_record)
+	await message.answer("Запрос на регистрацию отправлен.")
 	await state.clear()
 
 
 @router.message(RegistrationStates.confirmation, F.text == "Нет")
 async def registration_confirmation_no(message: Message, state: FSMContext):
 	log.debug("Регистрация отменена")
-	await message.answer("Регистрация отменена", reply_markup=get_user_keyboard())
+	await message.answer("Регистрация отменена.", reply_markup=get_user_keyboard())
 	await state.clear()
