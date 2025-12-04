@@ -5,7 +5,7 @@ from datetime import datetime
 from .base import Base
 
 
-class TransactionModel(Base):
+class RegistrationModel(Base):
 	__tablename__ = "registrations"
 	id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
 	user_id: Mapped[int]
