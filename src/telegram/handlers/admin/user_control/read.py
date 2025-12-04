@@ -22,7 +22,7 @@ async def list_users(message: Message):
 		return
 	text = "Список пользователей:\n--------------------------------------------\n"
 	for number, user in enumerate(users, start=1):
-		line = f"{'✅' if user.is_active else '🚫'} {user.name} ({user.id}) - {user.balance}₽\n"
+		line = f"{'✅' if user.is_active else '🚫'} {user.name} ({user.id}): {user.balance}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_user_control_keyboard())
 
