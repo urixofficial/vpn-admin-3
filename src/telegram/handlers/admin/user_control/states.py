@@ -7,6 +7,7 @@ class UserCrudStates(StatesGroup):
 	show_enter_id = State()
 	show_profile = State()
 	update_user = State()
+	edit_field = State()
 	delete_confirmation = State()
 
 
