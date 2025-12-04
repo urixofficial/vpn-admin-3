@@ -22,5 +22,3 @@ class ReadTransaction(TransactionBase):
 class UpdateTransaction(BaseModel):
 	user_id: int | None = None
 	amount: int | None = None
-	created_at: datetime | None = None
-	updated_at: datetime | None = None

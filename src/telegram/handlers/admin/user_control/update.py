@@ -9,7 +9,7 @@ from core.schemas.user import UpdateUser
 
 # from user.dto import UpdateUser
 from .states import UserCrudStates
-from .keyboards import get_update_keyboard
+from ..keyboards import get_update_keyboard
 from ...keyboards import get_cancel_keyboard
 
 router = Router(name="update_user_router")
@@ -39,8 +39,7 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 	value = message.text
 	update_data = {key: value}
 	try:
-		updated_user = UpdateUser(**update_data)
-		user = await user_repo.update(user_id, updated_user)
+		user = await user_repo.update(user_id, UpdateUser(**update_data))
 		log.info("Запись успешно обновлена: {}".format(user))
 		await message.answer("Запись успешно обновлена.", reply_markup=get_update_keyboard(UpdateUser))
 	except Exception as e:
