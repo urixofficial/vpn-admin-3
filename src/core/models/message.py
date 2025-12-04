@@ -20,7 +20,15 @@ class MessageModel(Base):
 	status: Mapped[MessageStatus] = mapped_column(
 		default=MessageStatus.PENDING, server_default=MessageStatus.PENDING.value
 	)
-	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
-	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
+	created_at: Mapped[datetime] = mapped_column(
+		default=datetime.now(),
+		server_default=func.now(),
+	)
+	updated_at: Mapped[datetime] = mapped_column(
+		default=datetime.now(),
+		onupdate=datetime.now(),
+		server_default=func.now(),
+		server_onupdate=func.now(),
+	)
 
 	user: Mapped["UserModel"] = relationship(back_populates="messages")

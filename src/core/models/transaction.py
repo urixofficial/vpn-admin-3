@@ -15,7 +15,15 @@ class TransactionModel(Base):
 	id: Mapped[int] = mapped_column(primary_key=True)
 	user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 	amount: Mapped[int]
-	created_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
-	updated_at: Mapped[datetime] = mapped_column(default=datetime.now(), server_default=func.now())
+	created_at: Mapped[datetime] = mapped_column(
+		default=datetime.now(),
+		server_default=func.now(),
+	)
+	updated_at: Mapped[datetime] = mapped_column(
+		default=datetime.now(),
+		onupdate=datetime.now(),
+		server_default=func.now(),
+		server_onupdate=func.now(),
+	)
 
 	user: Mapped["UserModel"] = relationship(back_populates="transactions")
