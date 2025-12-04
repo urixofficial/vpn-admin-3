@@ -5,8 +5,10 @@ from .create import router as create_user_router
 from .read import router as read_user_router
 from .update import router as update_user_router
 from .delete import router as delete_user_router
+from .registration import router as admin_registration_router
 
 router = Router(name="user_control_router")
+router.include_router(admin_registration_router)
 router.include_router(user_control_panel_router)
 router.include_router(create_user_router)
 router.include_router(read_user_router)
