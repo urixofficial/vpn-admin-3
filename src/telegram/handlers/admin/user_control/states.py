@@ -8,3 +8,7 @@ class UserCrudStates(StatesGroup):
 	show_profile = State()
 	update_user = State()
 	delete_confirmation = State()
+
+
+class AdminRegistrationStates(StatesGroup):
+	confirmation = State()
