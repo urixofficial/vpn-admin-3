@@ -9,7 +9,7 @@ from core.repos.transaction import transaction_repo
 from core.schemas.message import CreateMessage
 
 from .states import TransactionCrudStates
-from ..keyboards import get_confirmation_keyboard
+from telegram.handlers.keyboards import get_confirmation_keyboard
 from .keyboards import get_transaction_control_keyboard
 
 router = Router(name="delete_transaction_router")

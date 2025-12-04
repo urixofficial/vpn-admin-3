@@ -6,7 +6,8 @@ from core.config import settings
 from core.logger import log
 from core.repos.user import user_repo
 from telegram.handlers.admin.user_control.states import AdminRegistrationStates
-from telegram.handlers.user.keyboards import get_cancel_keyboard, get_confirmation_keyboard, get_user_keyboard
+from telegram.handlers.user.keyboards import get_user_keyboard
+from telegram.handlers.keyboards import get_cancel_keyboard, get_confirmation_keyboard
 from telegram.handlers.user.states import UserRegistrationStates
 
 router = Router(name="registration_router")
@@ -59,7 +60,10 @@ async def registration_confirmation_yes(message: Message, state: FSMContext, dis
 	)
 	await message.bot.send_message(
 		chat_id=settings.tg.admin_id,
-		text=f"Пользователь {name} ({message.from_user.id}) отправил запрос на регистрацию.\n"
+		text=f"Регистрация\n"
+		f"----------------------------------------\n"
+		f"Имя: {name}\n"
+		f"ID: {message.from_user.id}\n"
 		f"----------------------------------------\n"
 		f"Подтвердить?",
 		reply_markup=get_confirmation_keyboard(),

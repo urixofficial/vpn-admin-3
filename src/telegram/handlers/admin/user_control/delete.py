@@ -7,7 +7,7 @@ from core.logger import log
 from telegram.handlers.admin.user_control.states import UserCrudStates
 from core.repos.user import user_repo
 
-from ..keyboards import get_confirmation_keyboard
+from telegram.handlers.keyboards import get_confirmation_keyboard
 from .keyboards import get_user_control_keyboard
 
 router = Router(name="delete_user_router")

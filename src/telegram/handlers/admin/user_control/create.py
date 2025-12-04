@@ -7,7 +7,7 @@ from core.config import settings
 from core.logger import log
 from core.schemas.user import CreateUser
 from core.repos.user import user_repo
-from ..keyboards import get_cancel_keyboard
+from telegram.handlers.keyboards import get_cancel_keyboard
 from .keyboards import get_user_control_keyboard
 from .states import UserCrudStates
 

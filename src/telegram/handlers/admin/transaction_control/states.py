@@ -8,3 +8,7 @@ class TransactionCrudStates(StatesGroup):
 	show_profile = State()
 	update = State()
 	delete_confirmation = State()
+
+
+class AdminPaymentStates(StatesGroup):
+	confirmation = State()

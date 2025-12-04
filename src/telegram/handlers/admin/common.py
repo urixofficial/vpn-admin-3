@@ -6,7 +6,7 @@ from aiogram.types import Message
 from core.config import settings
 from core.logger import log
 
-from telegram.handlers.admin.keyboards import get_admin_panel_keyboard
+from telegram.handlers.admin.keyboards import get_admin_keyboard
 
 router = Router(name="common_router")
 
@@ -14,5 +14,5 @@ router = Router(name="common_router")
 @router.message(Command("admin"), F.from_user.id == settings.tg.admin_id)
 async def admin_panel(message: Message, state: FSMContext):
 	log.debug("Вывод панели администратора")
-	await message.answer("Панель администратора:", reply_markup=get_admin_panel_keyboard())
+	await message.answer("Панель администратора:", reply_markup=get_admin_keyboard())
 	await state.clear()

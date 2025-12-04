@@ -11,7 +11,7 @@ from core.schemas.transaction import CreateTransaction
 from core.repos.transaction import transaction_repo
 from core.repos.user import user_repo
 
-from ..keyboards import get_cancel_keyboard
+from telegram.handlers.keyboards import get_cancel_keyboard
 from .keyboards import get_transaction_control_keyboard
 from .states import TransactionCrudStates
 
