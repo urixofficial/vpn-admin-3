@@ -3,7 +3,7 @@ from pathlib import Path
 
 from loguru import logger
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOG_LEVEL = "DEBUG"
 LOG_PATH = BASE_DIR / "logs/app.log"
