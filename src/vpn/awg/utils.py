@@ -50,7 +50,7 @@ def generate_key_pair() -> tuple[str, str]:
 			check=True,
 		).stdout.strip()
 		public_key = subprocess.run(
-			["awg", "pubkey"],
+			["sudo", "awg", "pubkey"],
 			input=private_key,
 			capture_output=True,
 			text=True,
