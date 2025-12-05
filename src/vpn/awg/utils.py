@@ -68,8 +68,10 @@ def get_free_ip(awg_records: list[ReadAwgRecord], subnet: str, mask: int) -> str
 	subnet = ip_network(f"{subnet}/{mask}")
 	used_ips = {awg_record.ip for awg_record in awg_records}
 	for ip in subnet.hosts():
+		if ip == subnet.network_address + 1:
+			continue
 		ip_str = str(ip)
-		if ip_str not in used_ips and ip != f"{subnet.network_address + 1}":
+		if ip_str not in used_ips:
 			log.debug("Найден свободный IP: {}".format(ip_str))
 			return ip_str
 	log.warning("Свободные IP-адреса не найдены")
