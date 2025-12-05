@@ -44,7 +44,7 @@ def generate_key_pair() -> tuple[str, str]:
 	log.debug("Генерация пары ключей AWG")
 	try:
 		private_key = subprocess.run(
-			["awg", "genkey"],
+			["sudo", "awg", "genkey"],
 			capture_output=True,
 			text=True,
 			check=True,
