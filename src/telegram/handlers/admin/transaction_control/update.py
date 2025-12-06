@@ -43,8 +43,14 @@ async def edit_transaction_field_step2(message: Message, state: FSMContext):
 	try:
 		transaction = await transaction_repo.update(transaction_id, UpdateTransaction(**update_data))
 		log.info("Запись успешно обновлена:\n{}".format(transaction))
+		text = (
+			f"Транзакция {transaction.id:03d}\n"
+			f"--------------------------------------------\n"
+			f"ID пользователя: {transaction.user_id}\n"
+			f"Сумма: {transaction.amount}₽\n"
+		)
 		await message.answer("Запись успешно обновлена.", reply_markup=get_update_keyboard(UpdateTransaction))
 	except Exception as e:
-		log.error("Ошибка при обновлении значения {} = {}: {}".format(key, value, e))
+		log.error("Ошибка при обновлении значения: '{}' = '{}': {}".format(key, value, e))
 		await message.answer("Некорректный ввод.", reply_markup=get_update_keyboard(UpdateTransaction))
 	await state.set_state(TransactionCrudStates.update)

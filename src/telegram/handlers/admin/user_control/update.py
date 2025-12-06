@@ -24,7 +24,7 @@ async def update_user(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.update_user, F.text.in_(UpdateUser.model_fields))
 async def edit_user_field_step1(message: Message, state: FSMContext):
-	log.info("Изменение свойства пользователя: {}. Запрос значения...".format(message.text))
+	log.info("Изменение свойства пользователя: '{}'. Запрос значения...".format(message.text))
 	await state.update_data(key=message.text)
 	await message.answer(f"Введите новое значение {message.text}:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.edit_field)
@@ -32,7 +32,7 @@ async def edit_user_field_step1(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.edit_field)
 async def edit_user_field_step2(message: Message, state: FSMContext):
-	log.info("Изменение свойства пользователя: {}. Проверка и установка значения".format(message.text))
+	log.info("Получено значение: '{}'. Проверка и установка значения".format(message.text))
 	data = await state.get_data()
 	user_id = data["user_id"]
 	key = data["key"]
@@ -40,9 +40,9 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 	update_data = {key: value}
 	try:
 		user = await user_repo.update(user_id, UpdateUser(**update_data))
-		log.info("Запись успешно обновлена: {}".format(user))
+		log.info("Запись успешно обновлена:\n{}".format(user))
 		text = (
-			"Запись успешно обновлена"
+			"Запись успешно обновлена\n"
 			"--------------------------------------------\n"
 			f"ID: {user.id}\n"
 			f"Имя: {user.name}\n"
