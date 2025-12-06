@@ -26,15 +26,15 @@ async def update_transaction(message: Message, state: FSMContext):
 	F.from_user.id == settings.tg.admin_id, TransactionCrudStates.update, F.text.in_(UpdateTransaction.model_fields)
 )
 async def edit_transaction_field_step1(message: Message, state: FSMContext):
-	log.info("Изменение свойства транзакции: {}. Запрос значения...".format(message.text))
+	log.info("Изменение свойства транзакции: '{}'. Запрос значения...".format(message.text))
 	await state.update_data(key=message.text)
-	await message.answer(f"Введите новое значение {message.text}:", reply_markup=get_cancel_keyboard())
+	await message.answer(f"Введите новое значение '{message.text}':", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.edit_field)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.edit_field)
 async def edit_transaction_field_step2(message: Message, state: FSMContext):
-	log.info("Изменение свойства транзакции: {}. Проверка и установка значения".format(message.text))
+	log.info("Изменение свойства транзакции: '{}'. Проверка и установка значения".format(message.text))
 	data = await state.get_data()
 	transaction_id = data["transaction_id"]
 	key = data["key"]
