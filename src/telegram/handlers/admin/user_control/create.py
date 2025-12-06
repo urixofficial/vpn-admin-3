@@ -67,7 +67,7 @@ async def create_user_step3(message: Message, state: FSMContext):
 		await message.answer("Имя не уникально. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(name=name)
-	log.info("Создание записи в базе данных")
+	log.info("Имя корректно. Создание записи в базе данных")
 	data = await state.get_data()
 	create_user_dto = CreateUser(**data)
 	try:

@@ -41,7 +41,17 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 	try:
 		user = await user_repo.update(user_id, UpdateUser(**update_data))
 		log.info("Запись успешно обновлена: {}".format(user))
-		await message.answer("Запись успешно обновлена.", reply_markup=get_update_keyboard(UpdateUser))
+		text = (
+			"Запись успешно обновлена"
+			"--------------------------------------------\n"
+			f"ID: {user.id}\n"
+			f"Имя: {user.name}\n"
+			f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\n"
+			f"Баланс: {user.balance}₽\n"
+			f"Создан: {user.created_at.date()}\n"
+			f"Обновлен: {user.updated_at.date()}"
+		)
+		await message.answer(text, reply_markup=get_update_keyboard(UpdateUser))
 	except Exception as e:
 		log.error("Ошибка при обновлении значения {} = {}: {}".format(key, value, e))
 		await message.answer("Некорректный ввод.", reply_markup=get_update_keyboard(UpdateUser))
