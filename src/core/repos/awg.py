@@ -67,7 +67,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		awg_record = await self.create(awg_record)
 
 		# Обновление конфигурации сервера
-		if not self.update_server_config():
+		if not await self.update_server_config():
 			log.error("Не удалось обновить конфигурацию сервера.")
 			await self.delete(awg_record.id)
 			return None
