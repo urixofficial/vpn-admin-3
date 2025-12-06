@@ -78,8 +78,8 @@ def get_free_ip(awg_records: list[ReadAwgRecord], subnet: str, mask: int) -> str
 	return None
 
 
-def create_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> str:
-	log.debug("Создание конфигурации AWG для пользователя")
+def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> str:
+	log.debug("Генерация конфигурации AWG для пользователя")
 	user_config = (
 		f"[Interface]\n"
 		f"PrivateKey = {awg_record.private_key}\n"
@@ -102,8 +102,8 @@ def create_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> st
 	return user_config
 
 
-def create_server_interface_config(awg_config: AwgSettings) -> str:
-	log.debug("Создание секции Interface конфигурации AWG для сервера")
+def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRecord]) -> str:
+	log.debug("Генерация конфигурации AWG для сервера")
 	interface_section = (
 		f"[Interface]\n"
 		f"ListenPort = {awg_config.server_port}\n"
@@ -118,18 +118,13 @@ def create_server_interface_config(awg_config: AwgSettings) -> str:
 		f"H3 = {awg_config.h3}\n"
 		f"H4 = {awg_config.h4}\n\n"
 	)
-	return interface_section
-
-
-def create_server_peers_config(awg_records: list[ReadAwgRecord]) -> str:
-	log.debug("Создание секции Peers конфигурации AWG для сервера")
 	peers_section = ""
 	for awg_record in awg_records:
 		peer_section = (
 			f"[Peer]\nPublicKey = {awg_record.public_key}\nAllowedIPs = {awg_record.ip}/{awg_record.mask}\n\n"
 		)
 		peers_section += peer_section
-	return peers_section
+	return interface_section + peers_section
 
 
 def sync_server_config(interface: str, config_path: str):

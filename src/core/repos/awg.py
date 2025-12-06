@@ -11,10 +11,9 @@ from core.schemas.awg import (
 from core.config import settings
 from core.logger import log
 from vpn.awg.utils import (
-	create_server_interface_config,
-	create_server_peers_config,
+	generate_server_config,
 	save_file,
-	create_user_config,
+	generate_user_config,
 	get_free_ip,
 	generate_key_pair,
 	sync_server_config,
@@ -35,16 +34,14 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 
 	async def update_server_config(self) -> bool:
 		# генерация конфига
-		interface_config = create_server_interface_config(settings.awg)
 		active_awg_records = await self.get_active()
-		peers_config = create_server_peers_config(active_awg_records)
-		server_config = interface_config + peers_config
+		server_config = generate_server_config(settings.awg, active_awg_records)
 
 		# сохранение конфига в файл
 		if not save_file(server_config, settings.awg.config_path):
 			log.error("Ошибка сохранения конфигурации сервера в файл")
 			return False
-
+		# синхронизация интерфейса с новым конфигом
 		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return True
 
@@ -73,7 +70,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return None
 
 		# Генерация клиентской конфигурации
-		user_config = create_user_config(awg_record, settings.awg)
+		user_config = generate_user_config(awg_record, settings.awg)
 
 		log.debug("OK")
 		return user_config
@@ -107,7 +104,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		try:
 			awg_record = await self.get(user_id)
 			if awg_record:  # если есть запись в таблице awg
-				user_config = create_user_config(awg_record, settings.awg)
+				user_config = generate_user_config(awg_record, settings.awg)
 			else:  # Создание новой записи
 				user_config = await self.add_config(user_id)
 			return user_config
