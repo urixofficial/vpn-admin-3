@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, BufferedInputFile
 
 from core.config import settings
@@ -38,7 +38,7 @@ async def instructions(message: Message):
 	text = "Выберите систему:"
 	await message.answer(text, reply_markup=get_instructions_keyboard())
 
-
+@router.message(Command("/get_awg_config"))
 @router.message(F.text == "Файл конфигурации AWG")
 async def get_awg_config(message: Message):
 	log.info(
