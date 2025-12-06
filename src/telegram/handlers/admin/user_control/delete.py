@@ -27,7 +27,7 @@ async def delete_confirmation_ok(message: Message, state: FSMContext):
 	data = await state.get_data()
 	user_id = data["user_id"]
 	await user_repo.delete(user_id)
-	log.info("Пользователь с id={} успешно удален".format(user_id))
+	log.info("Пользователь {} успешно удален".format(user_id))
 	await message.answer("Пользователь успешно удален.", reply_markup=get_user_control_keyboard())
 
 

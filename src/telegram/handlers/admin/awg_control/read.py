@@ -23,7 +23,7 @@ async def list_awg_records(message: Message):
 		return
 	text = "Список записей AWG:\n--------------------------------------------\n"
 	for number, awg_record in enumerate(awg_records, start=1):
-		line = f"{number:02d} {awg_record.id}: {awg_record.ip}\n"
+		line = f"{number:03d}. {awg_record.id} - {awg_record.ip}/{awg_record.mask}\n"
 		text += line
 	await message.answer(text, reply_markup=get_awg_control_keyboard())
 
@@ -59,10 +59,9 @@ async def show_awg_record_step2(message: Message, state: FSMContext):
 	text = (
 		f"Запись AWG {awg_record.id}\n"
 		"--------------------------------------------\n"
-		f"IP-адрес: {awg_record.ip}\n"
-		f"Маска: {awg_record.mask}\n"
-		f"Приватный ключ: {awg_record.private_key}₽\n"
-		f"Публичный ключ: {awg_record.public_key}\n"
+		f"IP-адрес: {awg_record.ip}/{awg_record.mask}\n"
+		# f"Приватный ключ: {awg_record.private_key}\n"
+		# f"Публичный ключ: {awg_record.public_key}\n"
 		f"Создана: {awg_record.created_at.date()}\n"
 		f"Обновлена: {awg_record.updated_at.date()}"
 	)
