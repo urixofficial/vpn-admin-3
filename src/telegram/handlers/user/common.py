@@ -38,7 +38,8 @@ async def instructions(message: Message):
 	text = "Выберите систему:"
 	await message.answer(text, reply_markup=get_instructions_keyboard())
 
-@router.message(Command("/get_awg_config"))
+
+@router.message(Command("get_awg_config"))
 @router.message(F.text == "Файл конфигурации AWG")
 async def get_awg_config(message: Message):
 	log.info(
