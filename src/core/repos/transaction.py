@@ -12,6 +12,7 @@ from core.logger import log
 from core.database import connection
 
 from .base import BaseRepo
+from .user import user_repo
 from ..config import settings
 from ..models import UserModel
 
@@ -41,6 +42,30 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		await session.commit()
 		# await session.refresh(item_model)
 		return ReadTransaction.model_validate(transaction_model)
+
+	@connection
+	async def update(
+		self, item_id: int, update_transaction: UpdateTransaction, session: AsyncSession
+	) -> ReadTransaction:
+		log.debug(
+			"Обновление транзакции {} значениями {} в таблице {}".format(
+				item_id, update_transaction, self.model.__tablename__
+			)
+		)
+		transaction_model = await session.get(self.model, item_id)
+		if not transaction_model:
+			raise Exception("Транзакция {} не найдена".format(item_id))
+		for key, value in update_transaction.model_dump(exclude_unset=True).items():
+			if key == "amount":
+				user_model = await session.get(UserModel, transaction_model.user_id)
+				old_balance = user_model.balance
+				new_balance = old_balance - transaction_model.amount + value
+				user_model.balance = new_balance
+			setattr(transaction_model, key, value)
+
+		await session.commit()
+		await session.refresh(transaction_model)
+		return self.read_schema.model_validate(transaction_model)
 
 	@connection
 	async def delete(self, transaction_id: int, session: AsyncSession) -> ReadTransaction:
