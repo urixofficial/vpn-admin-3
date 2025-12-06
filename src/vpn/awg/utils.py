@@ -128,7 +128,7 @@ def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRec
 
 
 def sync_server_config(interface: str, config_path: str):
-	log.debug("Синхронизация интерфейса {} с конфигурации: {}".format(interface, config_path))
+	log.debug("Синхронизация интерфейса {} с конфигурацией: {}".format(interface, config_path))
 	try:
 		subprocess.run(
 			["sudo", "awg", "syncconf", interface, config_path],
