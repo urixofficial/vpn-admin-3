@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, BufferedInputFile
 
+from core.config import settings
 from core.logger import log
 from core.repos.awg import awg_repo
 from core.repos.user import user_repo
@@ -43,7 +44,7 @@ async def get_awg_config(message: Message):
 	log.debug(
 		"Пользователь {} ({}) запросил файл конфигурации AWG".format(message.from_user.full_name, message.from_user.id)
 	)
-	filename = f"awg_config_{message.from_user.id}.conf"
+	filename = f"awg_{settings.awg.server_ip}_{message.from_user.id}.conf"
 	config = await awg_repo.get_config(message.from_user.id)
 	if not config:
 		await message.answer("При получении файла конфигурации произошла ошибка.")
