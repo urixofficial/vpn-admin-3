@@ -26,7 +26,7 @@ async def update_user(message: Message, state: FSMContext):
 async def edit_user_field_step1(message: Message, state: FSMContext):
 	log.info("Изменение свойства пользователя: '{}'. Запрос значения...".format(message.text))
 	await state.update_data(key=message.text)
-	await message.answer(f"Введите новое значение {message.text}:", reply_markup=get_cancel_keyboard())
+	await message.answer(f"Введите новое значение '{message.text}':", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.edit_field)
 
 
