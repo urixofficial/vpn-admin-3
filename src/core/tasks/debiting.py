@@ -7,9 +7,8 @@ from core.schemas.user import ReadUser, UpdateUser
 
 
 async def debiting_funds():
-	log.debug("Запуск списания средств")
+	log.info("Запуск ежедневного списания средств. Тариф: {}".format(settings.billing.daily_payment))
 	users: list[ReadUser] = await user_repo.get_active()
-	print(users)
 	daily_payment = settings.billing.daily_payment
 	counter = 0
 	for user in users:
@@ -29,4 +28,4 @@ async def debiting_funds():
 				notification = CreateMessage(chat_id=updated_user.id, text=text)
 				await message_repo.send_message(notification)
 				counter += 1
-	log.debug("Списание средств завершено. Отправлено уведомлений: {}".format(counter))
+	log.info("Списание средств завершено. Отправлено уведомлений: {}".format(counter))
