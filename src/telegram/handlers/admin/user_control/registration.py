@@ -15,7 +15,7 @@ router = Router(name="admin_registration_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation, F.text == "Да")
 async def admin_registration_yes(message: Message, state: FSMContext):
-	log.debug("Заявка на регистрацию подтверждена администратором")
+	log.info("Заявка на регистрацию подтверждена администратором")
 	user_data = await state.get_data()
 	create_user = CreateUser(**user_data)
 	try:
@@ -37,7 +37,7 @@ async def admin_registration_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation, F.text == "Нет")
 async def admin_registration_no(message: Message, state: FSMContext):
-	log.debug("Регистрация на регистрацию отклонена администратором")
+	log.info("Регистрация на регистрацию отклонена администратором")
 	user_data = await state.get_data()
 	user_id = user_data["id"]
 	await message.answer("Заявка отклонена.", reply_markup=get_admin_keyboard())

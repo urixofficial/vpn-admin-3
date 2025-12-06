@@ -9,8 +9,8 @@ router = Router()
 
 @router.message(F.text == "Android")
 async def android(message: Message):
-	log.debug(
-		"Пользователь {} ({}) запросил инструкцию для Android".format(message.from_user.full_name, message.from_user.id)
+	log.info(
+		"Пользователь {} ({}) выбрал инструкцию для Android".format(message.from_user.full_name, message.from_user.id)
 	)
 	text = (
 		"Настройка VPN на Android (AWG)\n"
@@ -27,7 +27,7 @@ async def android(message: Message):
 
 @router.message(F.text == "iPhone")
 async def ios(message: Message):
-	log.debug(
+	log.info(
 		"Пользователь {} ({}) запросил инструкцию для iOS".format(message.from_user.full_name, message.from_user.id)
 	)
 	text = (
@@ -47,7 +47,7 @@ async def ios(message: Message):
 
 @router.message(F.text == "Windows")
 async def windows(message: Message):
-	log.debug(
+	log.info(
 		"Пользователь {} ({}) запросил инструкцию для Windows".format(message.from_user.full_name, message.from_user.id)
 	)
 	text = (
@@ -66,7 +66,7 @@ async def windows(message: Message):
 
 @router.message(F.text == "MacOS")
 async def macos(message: Message):
-	log.debug(
+	log.info(
 		"Пользователь {} ({}) запросил инструкцию для MacOS".format(message.from_user.full_name, message.from_user.id)
 	)
 	text = (

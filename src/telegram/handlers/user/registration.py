@@ -15,7 +15,7 @@ router = Router(name="registration_router")
 
 @router.message(F.text == "Регистрация")
 async def registration_step1(message: Message, state: FSMContext):
-	log.debug(
+	log.info(
 		"Пользователь {} ({}) запустил диалог регистрации. Запрос имени...".format(
 			message.from_user.full_name, message.from_user.id
 		)
@@ -27,15 +27,15 @@ async def registration_step1(message: Message, state: FSMContext):
 
 @router.message(UserRegistrationStates.enter_name)
 async def registration_step2(message: Message, state: FSMContext):
-	log.debug("Получено значение: {}".format(message.text))
+	log.info("Получено значение: {}".format(message.text))
 	name = message.text
 	if not 3 <= len(name) <= 24:
-		log.debug("Некорректный ввод. Повторный запрос")
+		log.info("Имя должно быть от 3 до 24 символов. Повторный запрос...")
 		await message.answer("Имя должно быть от 3 до 24 символов. Попробуйте еще раз:")
 		return
 	user = await user_repo.get_by_name(name)
 	if user:
-		log.debug("Некорректный ввод. Повторный запрос")
+		log.info("Имя не уникально. Повторный запрос...")
 		await message.answer("Имя не уникально. Попробуйте еще раз:")
 		return
 	await state.update_data(name=name)
@@ -46,7 +46,7 @@ async def registration_step2(message: Message, state: FSMContext):
 
 @router.message(UserRegistrationStates.confirmation, F.text == "Да")
 async def registration_confirmation_yes(message: Message, state: FSMContext, dispatcher: Dispatcher, bot: Bot):
-	log.debug("Подтверждение регистрации от пользователя получено. Отправка запроса на подтверждение администратору...")
+	log.info("Подтверждение регистрации от пользователя получено. Отправка запроса на подтверждение администратору...")
 	data = await state.get_data()
 	name = data["name"]
 	admin_state: FSMContext = dispatcher.fsm.get_context(
@@ -75,6 +75,6 @@ async def registration_confirmation_yes(message: Message, state: FSMContext, dis
 
 @router.message(UserRegistrationStates.confirmation, F.text == "Нет")
 async def registration_confirmation_no(message: Message, state: FSMContext):
-	log.debug("Регистрация отменена")
+	log.info("Регистрация отменена")
 	await message.answer("Регистрация отменена.", reply_markup=get_user_keyboard())
 	await state.clear()

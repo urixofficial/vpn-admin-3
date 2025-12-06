@@ -17,7 +17,7 @@ router = Router(name="update_transaction_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.show_profile, F.text == "Изменить")
 async def update_transaction(message: Message, state: FSMContext):
-	log.debug("Обновление транзакции")
+	log.info("Обновление транзакции")
 	await message.answer("Изменить свойства транзакции:", reply_markup=get_update_keyboard(UpdateTransaction))
 	await state.set_state(TransactionCrudStates.update)
 
@@ -26,7 +26,7 @@ async def update_transaction(message: Message, state: FSMContext):
 	F.from_user.id == settings.tg.admin_id, TransactionCrudStates.update, F.text.in_(UpdateTransaction.model_fields)
 )
 async def edit_transaction_field_step1(message: Message, state: FSMContext):
-	log.debug("Изменение свойства транзакции: {}. Запрос значения...".format(message.text))
+	log.info("Изменение свойства транзакции: {}. Запрос значения...".format(message.text))
 	await state.update_data(key=message.text)
 	await message.answer(f"Введите новое значение {message.text}:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.edit_field)
@@ -34,7 +34,7 @@ async def edit_transaction_field_step1(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.edit_field)
 async def edit_transaction_field_step2(message: Message, state: FSMContext):
-	log.debug("Изменение свойства транзакции: {}. Проверка и установка значения".format(message.text))
+	log.info("Изменение свойства транзакции: {}. Проверка и установка значения".format(message.text))
 	data = await state.get_data()
 	transaction_id = data["transaction_id"]
 	key = data["key"]
@@ -42,7 +42,7 @@ async def edit_transaction_field_step2(message: Message, state: FSMContext):
 	update_data = {key: value}
 	try:
 		transaction = await transaction_repo.update(transaction_id, UpdateTransaction(**update_data))
-		log.info("Запись успешно обновлена: {}".format(transaction))
+		log.info("Запись успешно обновлена:\n{}".format(transaction))
 		await message.answer("Запись успешно обновлена.", reply_markup=get_update_keyboard(UpdateTransaction))
 	except Exception as e:
 		log.error("Ошибка при обновлении значения {} = {}: {}".format(key, value, e))

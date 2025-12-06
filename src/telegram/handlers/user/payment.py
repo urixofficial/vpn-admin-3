@@ -14,7 +14,7 @@ router = Router(name="user_payment_router")
 
 @router.message(F.text == "Сообщить об оплате")
 async def user_payment_step1(message: Message, state: FSMContext):
-	log.debug(
+	log.info(
 		"{} ({}) запустил диалог оплаты. Запрос суммы...".format(message.from_user.full_name, message.from_user.id)
 	)
 	await message.answer("Введите сумму оплаты в рублях:", reply_markup=get_cancel_keyboard())
@@ -23,19 +23,19 @@ async def user_payment_step1(message: Message, state: FSMContext):
 
 @router.message(UserPaymentStates.enter_amount)
 async def user_payment_step2(message: Message, state: FSMContext, dispatcher: Dispatcher, bot: Bot):
-	log.debug("Получено значение: {}".format(message.text))
+	log.info("Получено значение: {}".format(message.text))
 	try:
 		amount = int(message.text)
 	except ValueError:
-		log.debug("Сумма должна быть целым числом. Повторный запрос...")
+		log.info("Сумма должна быть целым числом. Повторный запрос...")
 		await message.answer("Сумма должна быть целым числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	if amount <= 0:
-		log.debug("Сумма должна быть больше нуля. Повторный запрос...")
+		log.info("Сумма должна быть больше нуля. Повторный запрос...")
 		await message.answer("Сумма должна быть больше нуля. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 
-	log.debug("Отправка запроса на подтверждение транзакции администратору")
+	log.info("Отправка запроса на подтверждение транзакции администратору")
 	admin_state: FSMContext = dispatcher.fsm.get_context(
 		bot=bot,
 		chat_id=settings.tg.admin_id,

@@ -13,6 +13,10 @@ router = Router(name="common_router")
 
 @router.message(Command("admin"), F.from_user.id == settings.tg.admin_id)
 async def admin_panel(message: Message, state: FSMContext):
-	log.debug("Вывод панели администратора")
+	log.info(
+		"Пользователь {} ({}) запросил вывод панели администратора".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Панель администратора:", reply_markup=get_admin_keyboard())
 	await state.clear()

@@ -14,7 +14,7 @@ router = Router(name="read_user_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список пользователей")
 async def list_users(message: Message):
-	log.debug("Вывод списка пользователей")
+	log.info("Вывод списка пользователей")
 	users = await user_repo.get_all()
 	if not users:
 		log.debug("Список пользователей пуст")
@@ -29,7 +29,7 @@ async def list_users(message: Message):
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Профиль пользователя")
 async def show_user_step1(message: Message, state: FSMContext):
-	log.debug("Вывод профиля пользователя. Запрос ID")
+	log.info("Вывод профиля пользователя. Запрос ID...")
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.show_enter_id)
 
@@ -40,18 +40,18 @@ async def show_user_step2(message: Message, state: FSMContext):
 	try:
 		user_id = int(message.text)
 	except ValueError:
-		log.debug("ID должен быть целым числом. Повторный запрос")
+		log.info("ID должен быть целым числом. Повторный запрос...")
 		await message.answer("ID должен быть целым числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	if user_id <= 0:
-		log.debug("ID должен быть больше нуля. Повторный запрос")
+		log.info("ID должен быть больше нуля. Повторный запрос...")
 		await message.answer(
 			"ID должен быть положительным числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard()
 		)
 		return
 	user = await user_repo.get(user_id)
 	if not user:
-		log.debug("Пользователь не найден. Повторный запрос")
+		log.info("Пользователь не найден. Повторный запрос...")
 		await message.answer("Пользователь не найден. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(user_id=user_id)

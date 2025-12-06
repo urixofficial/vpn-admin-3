@@ -15,7 +15,7 @@ router = Router(name="admin_payment_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation, F.text == "Да")
 async def payment_confirmation_yes(message: Message, state: FSMContext):
-	log.debug("Оплата подтверждена администратором. Добавление транзакции")
+	log.info("Оплата подтверждена администратором. Добавление транзакции")
 	transaction_data = await state.get_data()
 	create_transaction = CreateTransaction(**transaction_data)
 	try:
@@ -38,7 +38,7 @@ async def payment_confirmation_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation, F.text == "Нет")
 async def admin_registration_no(message: Message, state: FSMContext):
-	log.debug("Запрос на подтверждение оплаты отклонен")
+	log.info("Запрос на подтверждение оплаты отклонен")
 	transaction_data = await state.get_data()
 	user_id = transaction_data["user_id"]
 	await message.answer("Запрос отклонен.", reply_markup=get_admin_keyboard())

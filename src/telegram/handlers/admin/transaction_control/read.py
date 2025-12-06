@@ -16,7 +16,7 @@ router = Router(name="read_transaction_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список транзакций")
 async def list_transactions(message: Message):
-	log.debug("Вывод списка транзакций")
+	log.info("Вывод списка транзакций")
 	transactions = await transaction_repo.get_all()
 	if not transactions:
 		log.debug("Список транзакций пуст")
@@ -33,27 +33,27 @@ async def list_transactions(message: Message):
 
 @router.message(F.text == "Профиль транзакции")
 async def show_user_step1(message: Message, state: FSMContext):
-	log.debug("Вывод профиля транзакции. Запрос ID")
+	log.info("Вывод профиля транзакции. Запрос ID...")
 	await message.answer("Введите ID транзакции:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.show_enter_id)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.show_enter_id)
 async def show_transaction_step2(message: Message, state: FSMContext):
-	log.debug("Получено значение: {}".format(message.text))
+	log.info("Получено значение: {}".format(message.text))
 	try:
 		transaction_id = int(message.text)
 	except ValueError:
-		log.debug("ID должен быть целым числом. Повторный запрос")
+		log.info("ID должен быть целым числом. Повторный запрос...")
 		await message.answer("ID должен быть целым числом. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	if transaction_id <= 0:
-		log.debug("ID должен быть больше нуля. Повторный запрос")
+		log.info("ID должен быть больше нуля. Повторный запрос...")
 		await message.answer("ID должен быть больше нуля. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	transaction = await transaction_repo.get(transaction_id)
 	if not transaction:
-		log.debug("Запись не найдена: {}. Повторный запрос")
+		log.info("Запись не найдена: {}. Повторный запрос...")
 		await message.answer("Запись не найдена. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(transaction_id=transaction_id)

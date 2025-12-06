@@ -13,7 +13,7 @@ router = Router(name="common_user_router")
 
 @router.message(CommandStart())
 async def start(message: Message):
-	log.debug("Пользователь {} ({}) запустил бота".format(message.from_user.full_name, message.from_user.id))
+	log.info("Пользователь {} ({}) запустил бота".format(message.from_user.full_name, message.from_user.id))
 	text = f"Приветствую, {message.from_user.full_name}!\n"
 	user = await user_repo.get(message.from_user.id)
 	if user:
@@ -26,7 +26,7 @@ async def start(message: Message):
 
 @router.message(F.text == "Статус")
 async def user_status(message: Message):
-	log.debug("Пользователь {} ({}) запросил статус".format(message.from_user.full_name, message.from_user.id))
+	log.info("Пользователь {} ({}) запросил статус".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
 	text = f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\nБаланс: {user.balance}₽"
 	await message.answer(text, reply_markup=get_user_keyboard())
@@ -34,14 +34,14 @@ async def user_status(message: Message):
 
 @router.message(F.text == "Инструкции")
 async def instructions(message: Message):
-	log.debug("Пользователь {} ({}) запросил инструкции".format(message.from_user.full_name, message.from_user.id))
+	log.info("Пользователь {} ({}) запросил инструкции".format(message.from_user.full_name, message.from_user.id))
 	text = "Выберите систему:"
 	await message.answer(text, reply_markup=get_instructions_keyboard())
 
 
 @router.message(F.text == "Файл конфигурации AWG")
 async def get_awg_config(message: Message):
-	log.debug(
+	log.info(
 		"Пользователь {} ({}) запросил файл конфигурации AWG".format(message.from_user.full_name, message.from_user.id)
 	)
 	filename = f"awg_{settings.awg.server_ip}_{message.from_user.id}.conf"
