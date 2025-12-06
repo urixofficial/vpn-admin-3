@@ -49,7 +49,7 @@ async def edit_transaction_field_step2(message: Message, state: FSMContext):
 			f"ID пользователя: {transaction.user_id}\n"
 			f"Сумма: {transaction.amount}₽\n"
 		)
-		await message.answer("Запись успешно обновлена.", reply_markup=get_update_keyboard(UpdateTransaction))
+		await message.answer(text, reply_markup=get_update_keyboard(UpdateTransaction))
 	except Exception as e:
 		log.error("Ошибка при обновлении значения: '{}' = '{}': {}".format(key, value, e))
 		await message.answer("Некорректный ввод.", reply_markup=get_update_keyboard(UpdateTransaction))
