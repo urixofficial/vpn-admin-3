@@ -37,13 +37,13 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def get(self, item_id: int, session: AsyncSession) -> ReadSchema | None:
-		log.debug("Получение записи по id: {}".format(item_id))
+		log.debug("Получение записи {} из таблицы {}:".format(item_id, self.model.__tablename__))
 		item_model = await session.get(self.model, item_id)
 		return self.read_schema.model_validate(item_model) if item_model else None
 
 	@connection
 	async def create(self, create_item: CreateSchema, session: AsyncSession) -> ReadSchema:
-		log.debug("Создание записи:\n{}".format(create_item))
+		log.debug("Создание записи в таблице {}:\n{}".format(self.model.__tablename__, create_item))
 		item_model = self.model(**create_item.model_dump())
 		session.add(item_model)
 		await session.commit()
@@ -52,7 +52,9 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def update(self, item_id: int, update_item: UpdateSchema, session: AsyncSession) -> ReadSchema:
-		log.debug("Обновление записи {} значениями {}".format(item_id, update_item))
+		log.debug(
+			"Обновление записи {} значениями {} в таблице {}".format(item_id, update_item, self.model.__tablename__)
+		)
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
 			raise Exception("Запись {} не найдена".format(item_id))
@@ -64,10 +66,10 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def delete(self, item_id: int, session: AsyncSession) -> ReadSchema:
-		log.debug("Удаление записи {}".format(item_id))
+		log.debug("Удаление записи {} из таблицы {}".format(item_id, self.model.__tablename__))
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
-			raise Exception("Запись {} не найдена".format(item_id))
+			raise Exception("Запись {} в таблице {} не найдена".format(item_id, self.model.__tablename__))
 		await session.delete(item_model)
 		await session.commit()
 		return self.read_schema.model_validate(item_model)

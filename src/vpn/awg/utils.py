@@ -142,7 +142,7 @@ def sync_server_config(interface: str, config_path: str):
 			capture_output=True,
 			text=True,
 		)
-		log.info("OK")
+		log.debug("OK")
 		return True
 
 	except Exception as e:

@@ -75,7 +75,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		# Генерация клиентской конфигурации
 		user_config = create_user_config(awg_record, settings.awg)
 
-		log.info("OK")
+		log.debug("OK")
 		return user_config
 
 	async def del_config(self, user_id: int) -> bool:
