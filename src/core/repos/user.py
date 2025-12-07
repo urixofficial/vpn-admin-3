@@ -20,7 +20,7 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 
 	@connection
 	async def get_by_name(self, name: str, session: AsyncSession):
-		log.debug("Получение записи по name = {}".format(name))
+		log.debug("Получение записи по имени '{}'".format(name))
 		query = select(self.model).where(self.model.name == name)
 		user_model: UserModel | None = await session.scalar(query)
 		return self.read_schema.model_validate(user_model) if user_model else None
@@ -34,12 +34,12 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 		return [self.read_schema.model_validate(item_model) for item_model in item_models]
 
 	async def block(self, user_id: int):
-		log.info("Блокировка пользователя {}".format(user_id))
+		log.info("Блокировка пользователя #{}".format(user_id))
 		await self.update(UpdateUser(is_active=False))
 		# блокировка в интерфейсе AmneziaWG
 
 	async def unblock(self, user_id: int):
-		log.info("Разблокировка пользователя {}".format(user_id))
+		log.info("Разблокировка пользователя #{}".format(user_id))
 		await self.update(UpdateUser(is_active=True))
 		# блокировка в интерфейсе AmneziaWG
 

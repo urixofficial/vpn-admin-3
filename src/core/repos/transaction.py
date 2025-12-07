@@ -19,7 +19,7 @@ from ..models import UserModel
 class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel]):
 	@connection
 	async def get_by_user(self, user_id: int, session: AsyncSession) -> list[ReadTransaction]:
-		log.debug("Получение списка транзакций по пользователю")
+		log.debug("Получение списка транзакций по пользователю #{}".format(user_id))
 		query = select(TransactionModel).where(TransactionModel.user_id == user_id).order_by(TransactionModel.id.desc())
 		transaction_models = await session.execute(query)
 		await session.commit()
@@ -28,7 +28,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 	@connection
 	async def create(self, create_transaction: CreateTransaction, session: AsyncSession) -> ReadTransaction:
 		log.debug(
-			"Создание транзакции {}. Обновление баланса пользователя {}".format(
+			"Создание транзакции {}. Обновление баланса пользователя #{}".format(
 				create_transaction, create_transaction.user_id
 			)
 		)
@@ -47,13 +47,13 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		self, item_id: int, update_transaction: UpdateTransaction, session: AsyncSession
 	) -> ReadTransaction:
 		log.debug(
-			"Обновление транзакции {} значениями {} в таблице {}".format(
+			"Обновление транзакции #{} значениями {} в таблице '{}'".format(
 				item_id, update_transaction, self.model.__tablename__
 			)
 		)
 		transaction_model = await session.get(self.model, item_id)
 		if not transaction_model:
-			raise Exception("Транзакция {} не найдена".format(item_id))
+			raise Exception("Транзакция #{} не найдена".format(item_id))
 		for key, value in update_transaction.model_dump(exclude_unset=True).items():
 			if key == "amount":
 				user_model = await session.get(UserModel, transaction_model.user_id)
@@ -68,10 +68,10 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 
 	@connection
 	async def delete(self, transaction_id: int, session: AsyncSession) -> ReadTransaction:
-		log.debug("Удаление транзакции {}. Обновление баланса пользователя".format(transaction_id))
+		log.debug("Удаление транзакции #{}. Обновление баланса пользователя".format(transaction_id))
 		transaction_model = await session.get(self.model, transaction_id)
 		if not transaction_model:
-			raise Exception("Транзакция не найдена: {}".format(transaction_id))
+			raise Exception("Транзакция #{} не найдена".format(transaction_id))
 		await session.delete(transaction_model)
 		user_model = await session.get(UserModel, transaction_model.user_id)
 		user_model.balance -= transaction_model.amount

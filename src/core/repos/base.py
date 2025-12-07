@@ -29,7 +29,7 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def get_all(self, session: AsyncSession) -> list[ReadSchema]:
-		log.debug("Получение всех записей из таблицы {}".format(self.model.__tablename__))
+		log.debug("Получение всех записей из таблицы '{}'".format(self.model.__tablename__))
 		stmt = select(self.model).order_by(self.model.id)
 		result: Result = await session.execute(stmt)
 		item_models = result.scalars().all()
@@ -37,13 +37,13 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def get(self, item_id: int, session: AsyncSession) -> ReadSchema | None:
-		log.debug("Получение записи {} из таблицы {}:".format(item_id, self.model.__tablename__))
+		log.debug("Получение записи #{} из таблицы '{}':".format(item_id, self.model.__tablename__))
 		item_model = await session.get(self.model, item_id)
 		return self.read_schema.model_validate(item_model) if item_model else None
 
 	@connection
 	async def create(self, create_item: CreateSchema, session: AsyncSession) -> ReadSchema:
-		log.debug("Создание записи в таблице {}:\n{}".format(self.model.__tablename__, create_item))
+		log.debug("Создание записи в таблице '{}':\n{}".format(self.model.__tablename__, create_item))
 		item_model = self.model(**create_item.model_dump())
 		session.add(item_model)
 		await session.commit()
@@ -53,11 +53,11 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 	@connection
 	async def update(self, item_id: int, update_item: UpdateSchema, session: AsyncSession) -> ReadSchema:
 		log.debug(
-			"Обновление записи {} значениями {} в таблице {}".format(item_id, update_item, self.model.__tablename__)
+			"Обновление записи #{} значениями {} в таблице '{}'".format(item_id, update_item, self.model.__tablename__)
 		)
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
-			raise Exception("Запись {} не найдена".format(item_id))
+			raise Exception("Запись #{} не найдена".format(item_id))
 		for key, value in update_item.model_dump(exclude_unset=True).items():
 			setattr(item_model, key, value)
 		await session.commit()
@@ -66,10 +66,10 @@ class BaseRepo[CreateSchema, ReadSchema, UpdateSchema, Model]:
 
 	@connection
 	async def delete(self, item_id: int, session: AsyncSession) -> ReadSchema:
-		log.debug("Удаление записи {} из таблицы {}".format(item_id, self.model.__tablename__))
+		log.debug("Удаление записи #{} из таблицы '{}'".format(item_id, self.model.__tablename__))
 		item_model = await session.get(self.model, item_id)
 		if not item_model:
-			raise Exception("Запись {} в таблице {} не найдена".format(item_id, self.model.__tablename__))
+			raise Exception("Запись #{} в таблице '{}' не найдена".format(item_id, self.model.__tablename__))
 		await session.delete(item_model)
 		await session.commit()
 		return self.read_schema.model_validate(item_model)

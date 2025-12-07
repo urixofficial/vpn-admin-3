@@ -26,7 +26,7 @@ from .base import BaseRepo
 class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecordModel]):
 	@connection
 	async def get_active(self, session: AsyncSession) -> list[ReadAwgRecord]:
-		log.debug("Получение AWG-записей только для активных пользователей")
+		log.debug("Получение записей AWG только для активных пользователей")
 		query = (
 			select(AwgRecordModel).join(UserModel, AwgRecordModel.user_id == UserModel.id).where(UserModel.is_active)
 		)
@@ -36,7 +36,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 
 	@connection
 	async def get_by_user(self, user_id: int, session: AsyncSession) -> list[ReadAwgRecord]:
-		log.debug("Получение AWG-записей пользователя #{}".format(user_id))
+		log.debug("Получение записей AWG пользователя #{}".format(user_id))
 		query = select(AwgRecordModel).where(AwgRecordModel.user_id == user_id)
 		records = await session.scalars(query)
 		return [self.read_schema.model_validate(record) for record in records]
