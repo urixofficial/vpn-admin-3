@@ -7,6 +7,7 @@ def get_admin_keyboard():
 	keyboard.button(text="Пользователи")
 	keyboard.button(text="Транзакции")
 	keyboard.button(text="AWG")
+	keyboard.button(text="Рассылка")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
 

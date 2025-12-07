@@ -29,5 +29,11 @@ class MessageRepo(BaseRepo[CreateMessage, ReadMessage, UpdateMessage, MessageMod
 		status = await tg_send_message(message.chat_id, message.text)
 		await self.update(message.id, UpdateMessage(status=status))
 
+	async def broadcast(self, recipients: list[int], text: str):
+		log.debug("Отправка рассылки пользователям")
+
+		for recipient in recipients:
+			await self.send_message(CreateMessage(chat_id=recipient, text=text))
+
 
 message_repo = MessageRepo(CreateMessage, ReadMessage, UpdateMessage, MessageModel)
