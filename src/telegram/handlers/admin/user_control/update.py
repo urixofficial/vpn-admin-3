@@ -34,7 +34,7 @@ async def edit_user_field_step1(message: Message, state: FSMContext):
 async def edit_user_field_step2(message: Message, state: FSMContext):
 	log.info("Получено значение: '{}'. Проверка и установка значения".format(message.text))
 	data = await state.get_data()
-	user_id = data["awg_record_id"]
+	user_id = data["user_id"]
 	key = data["key"]
 	value = message.text
 	update_data = {key: value}
