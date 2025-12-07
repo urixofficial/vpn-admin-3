@@ -24,7 +24,7 @@ async def list_awg_records(message: Message):
 		return
 	text = "Список записей AWG:\n--------------------------------------------\n"
 	for awg_record in awg_records:
-		line = f"{awg_record.id:03d}. {awg_record.ip}/{awg_record.mask}\n"
+		line = f"{awg_record.id:03d}. {awg_record.ip}/{awg_record.mask} - {awg_record.user_id}\n"
 		text += line
 	await message.answer(text, reply_markup=get_awg_control_keyboard())
 
