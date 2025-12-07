@@ -16,6 +16,7 @@ from vpn.awg.utils import (
 	generate_user_config,
 	get_free_ip,
 	sync_server_config,
+	generate_key_pair,
 )
 from core.models import UserModel
 from core.database import connection
@@ -63,8 +64,8 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return None
 
 		# Генерация ключей
-		# private_key, public_key = generate_key_pair()
-		private_key, public_key = "key1", "key2"
+		private_key, public_key = generate_key_pair()
+		# private_key, public_key = "key1", "key2"
 
 		# Формирование записи для таблицы awg
 		awg_record = CreateAwgRecord(ip=ip, mask=32, user_id=user_id, public_key=public_key, private_key=private_key)
@@ -73,10 +74,10 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		awg_record = await self.create(awg_record)
 
 		# Обновление конфигурации сервера
-		# if not await self.update_server_config():
-		# 	log.error("Не удалось обновить конфигурацию сервера.")
-		# 	await self.delete(awg_record.id)
-		# 	return None
+		if not await self.update_server_config():
+			log.error("Не удалось обновить конфигурацию сервера.")
+			await self.delete(awg_record.id)
+			return None
 
 		# Генерация клиентской конфигурации
 		user_config = generate_user_config(awg_record, settings.awg)
