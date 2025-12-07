@@ -38,6 +38,7 @@ class BillingSettings(BaseModel):
 	daily_rate: int = Field(default=None, description="Тариф рублей в день")
 	hour: int = Field(default=12, description="Время проверки биллинга. Часы")
 	minute: int = Field(default=0, description="Время проверки биллинга. Минуты")
+	transactions_limit: int = Field(default=100, description="Ограничение выводимого количества транзакций")
 
 
 class AwgSettings(BaseModel):

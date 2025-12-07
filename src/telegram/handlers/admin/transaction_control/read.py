@@ -17,16 +17,16 @@ router = Router(name="read_transaction_router")
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список транзакций")
 async def list_transactions(message: Message):
 	log.info("Вывод списка транзакций")
-	transactions = await transaction_repo.get_all()
+	transactions = await transaction_repo.get_all(settings.billing.transactions_limit)
 	if not transactions:
 		log.debug("Список транзакций пуст")
 		await message.answer("Список транзакций пуст.")
 		return
-	text = "Список транзакций:\n--------------------------------------------\n"
+	text = (
+		f"Последние {settings.billing.transactions_limit} транзакций:\n--------------------------------------------\n"
+	)
 	for transaction in transactions:
-		user = await user_repo.get(transaction.user_id)
-		name = user.name if user else transaction.user_id
-		line = f"{transaction.id:03d}. {name}: {transaction.amount}₽\n"
+		line = f"{transaction.id:03d}. {transaction.created_at.date()} - {transaction.user_id}: {transaction.amount}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 
@@ -53,7 +53,7 @@ async def show_transaction_step2(message: Message, state: FSMContext):
 		return
 	transaction = await transaction_repo.get(transaction_id)
 	if not transaction:
-		log.info("Запись не найдена: {}. Повторный запрос...")
+		log.info("Запись #{} не найдена. Повторный запрос...")
 		await message.answer("Запись не найдена. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(transaction_id=transaction_id)

@@ -18,6 +18,13 @@ from ..models import UserModel
 
 class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransaction, TransactionModel]):
 	@connection
+	async def get_all(self, limit: int, session: AsyncSession) -> list[ReadTransaction]:
+		log.debug("Получение всех записей из таблицы '{}'".format(self.model.__tablename__))
+		query = select(self.model).order_by(self.model.id.desc()).limit(limit)
+		item_models = await session.scalars(query)
+		return [self.read_schema.model_validate(item_model) for item_model in item_models]
+
+	@connection
 	async def get_by_user(self, user_id: int, session: AsyncSession) -> list[ReadTransaction]:
 		log.debug("Получение списка транзакций по пользователю #{}".format(user_id))
 		query = select(TransactionModel).where(TransactionModel.user_id == user_id).order_by(TransactionModel.id.desc())
