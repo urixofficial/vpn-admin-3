@@ -7,7 +7,7 @@ from datetime import datetime
 
 class CreateUser(BaseModel):
 	id: int
-	name: Annotated[str, MinLen(3), MaxLen(24)]
+	name: Annotated[str, MinLen(3), MaxLen(48)]
 	model_config = ConfigDict(from_attributes=True)
 
 
@@ -20,7 +20,7 @@ class ReadUser(CreateUser):
 
 class UpdateUser(BaseModel):
 	id: int | None = None
-	name: Annotated[str, MinLen(3), MaxLen(24)] | None = None
+	name: Annotated[str, MinLen(3), MaxLen(48)] | None = None
 	is_active: bool | None = None
 	balance: int | None = None
 	model_config = ConfigDict(from_attributes=True)

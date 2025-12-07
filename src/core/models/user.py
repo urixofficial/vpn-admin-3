@@ -16,7 +16,7 @@ class UserModel(Base):
 	__tablename__ = "users"
 
 	id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-	name: Mapped[str] = mapped_column(String(32), unique=True)
+	name: Mapped[str] = mapped_column(String(48), unique=True)
 	is_active: Mapped[bool] = mapped_column(default=True, server_default="1")
 	balance: Mapped[int] = mapped_column(default=0, server_default="0")
 	created_at: Mapped[datetime] = mapped_column(
