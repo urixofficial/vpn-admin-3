@@ -57,11 +57,11 @@ async def show_awg_record_step2(message: Message, state: FSMContext):
 		await message.answer("Запись AWG не найдена. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(awg_record_id=awg_record_id)
-	user = await user_repo.get(awg_record_id)
+	user = await user_repo.get(awg_record.user_id)
 	text = (
 		f"Запись AWG {awg_record.id}\n"
 		"--------------------------------------------\n"
-		f"Пользователь: {user.name}\n"
+		f"Пользователь: {user.name if user else awg_record.user_id}\n"
 		f"IP-адрес: {awg_record.ip}/{awg_record.mask}\n"
 		# f"Приватный ключ: {awg_record.private_key}\n"
 		# f"Публичный ключ: {awg_record.public_key}\n"

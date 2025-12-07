@@ -40,7 +40,7 @@ async def payment_confirmation_yes(message: Message, state: FSMContext):
 async def admin_registration_no(message: Message, state: FSMContext):
 	log.info("Запрос на подтверждение оплаты отклонен")
 	transaction_data = await state.get_data()
-	user_id = transaction_data["user_id"]
+	user_id = transaction_data["awg_record_id"]
 	await message.answer("Запрос отклонен.", reply_markup=get_admin_keyboard())
 	await message.bot.send_message(user_id, "Ваша заявка на регистрацию отклонена.", reply_markup=get_user_keyboard())
 	await state.clear()

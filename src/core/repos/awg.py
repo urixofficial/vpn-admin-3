@@ -15,7 +15,6 @@ from vpn.awg.utils import (
 	save_file,
 	generate_user_config,
 	get_free_ip,
-	generate_key_pair,
 	sync_server_config,
 )
 from core.models import UserModel
@@ -32,15 +31,24 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		records = result.scalars().all()
 		return [self.read_schema.model_validate(record) for record in records]
 
+	@connection
+	async def get_by_user(self, user_id: int, session: AsyncSession) -> list[ReadAwgRecord]:
+		log.debug("Получение AWG-записей пользователя #{}".format(user_id))
+		query = select(AwgRecordModel).where(AwgRecordModel.user_id == user_id)
+		records = await session.scalars(query)
+		return [self.read_schema.model_validate(record) for record in records]
+
 	async def update_server_config(self) -> bool:
+		log.debug("Обновление конфигурации сервера: {}".format(settings.awg.config_path))
 		# генерация конфига
 		active_awg_records = await self.get_active()
 		server_config = generate_server_config(settings.awg, active_awg_records)
 
 		# сохранение конфига в файл
 		if not save_file(server_config, settings.awg.config_path):
-			log.error("Ошибка сохранения конфигурации сервера в файл")
+			log.error("Ошибка сохранения конфигурации сервера в файл: {}".format(settings.awg.config_path))
 			return False
+
 		# синхронизация интерфейса с новым конфигом
 		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return True
@@ -49,25 +57,26 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		log.debug("Создание новой конфигурации AWG для пользователя {}".format(user_id))
 		# Получение свободного IP
 		awg_records = await self.get_all()
-		user_ip = get_free_ip(awg_records, settings.awg.subnet, settings.awg.mask)
-		if not user_ip:
+		ip = get_free_ip(awg_records, settings.awg.subnet, settings.awg.mask)
+		if not ip:
 			log.error("Нет доступных IP-адресов")
 			return None
 
 		# Генерация ключей
-		private_key, public_key = generate_key_pair()
+		# private_key, public_key = generate_key_pair()
+		private_key, public_key = "key1", "key2"
 
 		# Формирование записи для таблицы awg
-		awg_record = CreateAwgRecord(id=user_id, ip=user_ip, mask=32, public_key=public_key, private_key=private_key)
+		awg_record = CreateAwgRecord(ip=ip, mask=32, user_id=user_id, public_key=public_key, private_key=private_key)
 
 		# Создание записи в таблице AWG
 		awg_record = await self.create(awg_record)
 
 		# Обновление конфигурации сервера
-		if not await self.update_server_config():
-			log.error("Не удалось обновить конфигурацию сервера.")
-			await self.delete(awg_record.id)
-			return None
+		# if not await self.update_server_config():
+		# 	log.error("Не удалось обновить конфигурацию сервера.")
+		# 	await self.delete(awg_record.id)
+		# 	return None
 
 		# Генерация клиентской конфигурации
 		user_config = generate_user_config(awg_record, settings.awg)
@@ -75,37 +84,38 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		log.debug("OK")
 		return user_config
 
-	async def del_config(self, user_id: int) -> bool:
-		log.debug("Удаление конфигурации AWG для пользователя {}".format(user_id))
+	async def del_config(self, awg_record_id: int) -> bool:
+		log.debug("Удаление конфигурации AWG #{}".format(awg_record_id))
 		try:
 			# Проверка существования конфига
-			awg_record = await self.get(user_id)
+			awg_record = await self.get(awg_record_id)
 			if not awg_record:
-				log.warning("Конфигурация AWG для пользователя {} не найдена".format(user_id))
+				log.warning("Конфигурация AWG #{} не найдена".format(awg_record_id))
 				return False
 
 			# Удаление записи из таблицы awg
-			await self.delete(user_id)
-			log.info("Конфигурация AWG для пользователя {} успешно удалена".format(user_id))
+			await self.delete(awg_record_id)
+			log.info("Конфигурация AWG #{} успешно удалена".format(awg_record_id))
 
 			# Обновление конфигурации сервера
 			if not self.update_server_config():
-				log.warning("Не удалось обновить конфигурацию сервера.")
+				log.warning("Не удалось обновить конфигурацию сервера: {}".format(settings.awg.config_path))
 
 			return True
 
 		except Exception as e:
-			log.error("Ошибка при удалении конфигурации AWG для пользователя {}: {}".format(user_id, e))
+			log.error("Ошибка при удалении конфигурации AWG #{}: {}".format(awg_record_id, e))
 			return False
 
 	async def get_config(self, user_id: int) -> str | None:
 		log.debug("Получение конфигурации AWG для пользователя {}".format(user_id))
 
 		try:
-			awg_record = await self.get(user_id)
-			if awg_record:  # если есть запись в таблице awg
+			awg_records = await self.get_by_user(user_id)
+			if awg_records:
+				awg_record = awg_records[0]
 				user_config = generate_user_config(awg_record, settings.awg)
-			else:  # Создание новой записи
+			else:
 				user_config = await self.add_config(user_id)
 			return user_config
 

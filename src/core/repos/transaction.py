@@ -12,7 +12,6 @@ from core.logger import log
 from core.database import connection
 
 from .base import BaseRepo
-from .user import user_repo
 from ..config import settings
 from ..models import UserModel
 

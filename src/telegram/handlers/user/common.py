@@ -1,10 +1,8 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, BufferedInputFile
+from aiogram.filters import CommandStart
+from aiogram.types import Message
 
-from core.config import settings
 from core.logger import log
-from core.repos.awg import awg_repo
 from core.repos.user import user_repo
 from telegram.handlers.user.keyboards import get_start_keyboard, get_user_keyboard, get_instructions_keyboard
 
@@ -37,20 +35,3 @@ async def instructions(message: Message):
 	log.info("Пользователь {} ({}) запросил инструкции".format(message.from_user.full_name, message.from_user.id))
 	text = "Выберите систему:"
 	await message.answer(text, reply_markup=get_instructions_keyboard())
-
-
-@router.message(Command("get_awg_config"))
-@router.message(F.text == "Файл конфигурации AWG")
-async def get_awg_config(message: Message):
-	log.info(
-		"Пользователь {} ({}) запросил файл конфигурации AWG".format(message.from_user.full_name, message.from_user.id)
-	)
-	filename = f"awg_{settings.awg.server_ip}_{message.from_user.id}.conf"
-	config = await awg_repo.get_config(message.from_user.id)
-	if not config:
-		await message.answer("При получении файла конфигурации произошла ошибка.")
-		return
-	config_bytes = config.encode("utf-8")
-	document = BufferedInputFile(config_bytes, filename=filename)
-	await message.bot.send_document(chat_id=message.from_user.id, document=document, caption="Ваш файл конфигурации")
-	log.info("Файл конфигурации отправлен пользователю")

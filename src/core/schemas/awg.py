@@ -3,9 +3,9 @@ from datetime import datetime
 
 
 class AwgRecordBase(BaseModel):
-	id: int
 	ip: str
 	mask: int
+	user_id: int
 	public_key: str
 	private_key: str
 
@@ -17,6 +17,7 @@ class CreateAwgRecord(AwgRecordBase):
 
 
 class ReadAwgRecord(AwgRecordBase):
+	id: int
 	created_at: datetime
 	updated_at: datetime
 
@@ -24,5 +25,6 @@ class ReadAwgRecord(AwgRecordBase):
 class UpdateAwgRecord(BaseModel):
 	ip: str | None = None
 	mask: int | None = None
+	user_id: int | None = None
 	public_key: str | None = None
 	private_key: str | None = None
