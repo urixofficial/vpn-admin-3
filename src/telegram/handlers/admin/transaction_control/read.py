@@ -1,7 +1,6 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-
 from core.config import settings
 from core.logger import log
 from core.repos.transaction import transaction_repo
@@ -26,7 +25,7 @@ async def list_transactions(message: Message):
 		f"Последние {settings.billing.transactions_limit} транзакций:\n--------------------------------------------\n"
 	)
 	for transaction in transactions:
-		line = f"{transaction.id:03d}. {transaction.created_at.date()} - {transaction.user_id}: {transaction.amount}₽\n"
+		line = f"{transaction.id:03d}. {transaction.created_at.date()} - {transaction.user_id:#10d}: {transaction.amount}₽\n"
 		text += line
 	await message.answer(text, reply_markup=get_transaction_control_keyboard())
 
