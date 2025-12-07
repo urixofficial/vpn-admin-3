@@ -36,7 +36,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		session.add(transaction_model)
 		user_model = await session.get(UserModel, transaction_model.user_id)
 		user_model.balance += transaction_model.amount
-		if not user_model.is_active and user_model.balance >= settings.billing.daily_payment:
+		if not user_model.is_active and user_model.balance >= settings.billing.daily_rate:
 			user_model.is_active = True
 		await session.commit()
 		# await session.refresh(item_model)
@@ -75,7 +75,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		await session.delete(transaction_model)
 		user_model = await session.get(UserModel, transaction_model.user_id)
 		user_model.balance -= transaction_model.amount
-		if user_model.is_active and user_model.balance < settings.billing.daily_payment:
+		if user_model.is_active and user_model.balance < settings.billing.daily_rate:
 			user_model.is_active = False
 		await session.commit()
 		return ReadTransaction.model_validate(transaction_model)

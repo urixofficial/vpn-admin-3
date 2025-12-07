@@ -35,7 +35,7 @@ class TelegramSettings(BaseModel):
 
 
 class BillingSettings(BaseModel):
-	daily_payment: int = Field(default=None, description="Сумма ежедневного списания")
+	daily_rate: int = Field(default=None, description="Тариф рублей в день")
 	hour: int = Field(default=12, description="Время проверки биллинга. Часы")
 	minute: int = Field(default=0, description="Время проверки биллинга. Минуты")
 
