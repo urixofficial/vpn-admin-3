@@ -9,19 +9,6 @@ from telegram.handlers.user.keyboards import get_start_keyboard, get_user_keyboa
 router = Router(name="common_user_router")
 
 
-@router.message(CommandStart())
-async def start(message: Message):
-	log.info("Пользователь {} ({}) запустил бота".format(message.from_user.full_name, message.from_user.id))
-	text = f"Приветствую, {message.from_user.full_name}!\n"
-	user = await user_repo.get(message.from_user.id)
-	if user:
-		keyboard = get_user_keyboard
-	else:
-		text += "Вы не зарегистрированы."
-		keyboard = get_start_keyboard
-	await message.answer(text, reply_markup=keyboard())
-
-
 @router.message(F.text == "Статус")
 async def user_status(message: Message):
 	log.info("Пользователь {} ({}) запросил статус".format(message.from_user.full_name, message.from_user.id))
@@ -35,3 +22,17 @@ async def instructions(message: Message):
 	log.info("Пользователь {} ({}) запросил инструкции".format(message.from_user.full_name, message.from_user.id))
 	text = "Выберите систему:"
 	await message.answer(text, reply_markup=get_instructions_keyboard())
+
+
+@router.message(CommandStart())
+@router.message()
+async def start(message: Message):
+	log.info("Пользователь {} ({}) запустил бота".format(message.from_user.full_name, message.from_user.id))
+	text = f"Приветствую, {message.from_user.full_name}!\n"
+	user = await user_repo.get(message.from_user.id)
+	if user:
+		keyboard = get_user_keyboard
+	else:
+		text += "Вы не зарегистрированы."
+		keyboard = get_start_keyboard
+	await message.answer(text, reply_markup=keyboard())
