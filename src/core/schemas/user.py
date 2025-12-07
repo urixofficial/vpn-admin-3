@@ -23,4 +23,11 @@ class UpdateUser(BaseModel):
 	name: Annotated[str, MinLen(3), MaxLen(48)] | None = None
 	is_active: bool | None = None
 	balance: int | None = None
+
 	model_config = ConfigDict(from_attributes=True)
+
+	def __repr__(self):
+		return ", ".join([f"{key}={value}" for key, value in self.model_dump().items() if value != None])
+
+	def __str__(self):
+		return self.__repr__()

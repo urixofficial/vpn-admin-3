@@ -32,3 +32,11 @@ class ReadMessage(MessageBase):
 
 class UpdateMessage(BaseModel):
 	status: MessageStatus
+
+	model_config = ConfigDict(from_attributes=True)
+
+	def __repr__(self):
+		return ", ".join([f"{key}={value}" for key, value in self.model_dump().items() if value != None])
+
+	def __str__(self):
+		return self.__repr__()
