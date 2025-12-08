@@ -14,6 +14,7 @@ def get_user_control_keyboard():
 def get_profile_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Изменить")
+	keyboard.button(text="Безлимит")
 	keyboard.button(text="Удалить")
 	keyboard.button(text="Отмена")
 	keyboard.adjust(1)

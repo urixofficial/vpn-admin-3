@@ -42,9 +42,10 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		transaction_model = TransactionModel(**create_transaction.model_dump())
 		session.add(transaction_model)
 		user_model = await session.get(UserModel, transaction_model.user_id)
-		user_model.balance += transaction_model.amount
-		if not user_model.is_active and user_model.balance >= settings.billing.daily_rate:
-			user_model.is_active = True
+		if isinstance(user_model.balance, int):
+			user_model.balance += transaction_model.amount
+			if not user_model.is_active and user_model.balance >= settings.billing.daily_rate:
+				user_model.is_active = True
 		await session.commit()
 		# await session.refresh(item_model)
 		return ReadTransaction.model_validate(transaction_model)
@@ -64,9 +65,10 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 		for key, value in update_transaction.model_dump(exclude_unset=True).items():
 			if key == "amount":
 				user_model = await session.get(UserModel, transaction_model.user_id)
-				old_balance = user_model.balance
-				new_balance = old_balance - transaction_model.amount + value
-				user_model.balance = new_balance
+				if isinstance(user_model.balance, int):
+					old_balance = user_model.balance
+					new_balance = old_balance - transaction_model.amount + value
+					user_model.balance = new_balance
 			setattr(transaction_model, key, value)
 
 		await session.commit()
@@ -81,9 +83,10 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 			raise Exception("Транзакция #{} не найдена".format(transaction_id))
 		await session.delete(transaction_model)
 		user_model = await session.get(UserModel, transaction_model.user_id)
-		user_model.balance -= transaction_model.amount
-		if user_model.is_active and user_model.balance < settings.billing.daily_rate:
-			user_model.is_active = False
+		if isinstance(user_model.balance, int):
+			user_model.balance -= transaction_model.amount
+			if user_model.is_active and user_model.balance < settings.billing.daily_rate:
+				user_model.is_active = False
 		await session.commit()
 		return ReadTransaction.model_validate(transaction_model)
 

@@ -33,6 +33,15 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 		item_models = result.scalars().all()
 		return [self.read_schema.model_validate(item_model) for item_model in item_models]
 
+	@connection
+	async def set_unlimited(self, user_id: int, session: AsyncSession) -> ReadUser:
+		log.debug("Установка пользователю #{} безлимитного баланса".format(user_id))
+		user_model = await session.get(self.model, user_id)
+		user_model.balance = None
+		await session.commit()
+		await session.refresh(user_model)
+		return self.read_schema.model_validate(user_model)
+
 	async def block(self, user_id: int):
 		log.info("Блокировка пользователя #{}".format(user_id))
 		await self.update(UpdateUser(is_active=False))

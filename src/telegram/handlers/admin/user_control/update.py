@@ -9,8 +9,8 @@ from core.schemas.user import UpdateUser
 
 # from user.dto import UpdateUser
 from .states import UserCrudStates
-from ..keyboards import get_update_keyboard
-from ...keyboards import get_cancel_keyboard
+from ..keyboards import get_update_keyboard, get_admin_keyboard
+from ...keyboards import get_cancel_keyboard, get_confirmation_keyboard
 
 router = Router(name="update_user_router")
 
@@ -41,13 +41,14 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 	try:
 		user = await user_repo.update(user_id, UpdateUser(**update_data))
 		log.info("Запись успешно обновлена:\n{}".format(user))
+		balance = f"{user.balance}₽" if isinstance(user.balance, int) else "∞"
 		text = (
 			"Запись успешно обновлена\n"
 			"--------------------------------------------\n"
 			f"ID: {user.id}\n"
 			f"Имя: {user.name}\n"
 			f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\n"
-			f"Баланс: {user.balance}₽\n"
+			f"Баланс: {balance}\n"
 			f"Создан: {user.created_at.date()}\n"
 			f"Обновлен: {user.updated_at.date()}"
 		)
@@ -56,3 +57,46 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 		log.error("Ошибка при обновлении значения {} = {}: {}".format(key, value, e))
 		await message.answer("Некорректный ввод.", reply_markup=get_update_keyboard(UpdateUser))
 	await state.set_state(UserCrudStates.update_user)
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.show_profile, F.text == "Безлимит")
+async def set_user_balance_unlimited(message: Message, state: FSMContext):
+	log.info("Установка безлимитного баланса для пользователя. Запрос подтверждения...")
+	fsm_data = await state.get_data()
+	user_id = fsm_data["user_id"]
+	user = await user_repo.get(user_id)
+	await message.answer(
+		f"Установить пользователю {user.name} ({user.id}) безлимитный баланс?", reply_markup=get_confirmation_keyboard()
+	)
+	await state.set_state(UserCrudStates.set_unlimited)
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.set_unlimited, F.text == "Да")
+async def set_user_balance_unlimited_yes(message: Message, state: FSMContext):
+	log.info("Подтверждение безлимитного баланса получено. Обновление записи в базе данных")
+	fsm_data = await state.get_data()
+	user_id = fsm_data["user_id"]
+	try:
+		user = await user_repo.set_unlimited(user_id)
+		balance = f"{user.balance}₽" if isinstance(user.balance, int) else "∞"
+		text = (
+			"Запись успешно обновлена\n"
+			"--------------------------------------------\n"
+			f"ID: {user.id}\n"
+			f"Имя: {user.name}\n"
+			f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\n"
+			f"Баланс: {balance}\n"
+			f"Создан: {user.created_at.date()}\n"
+			f"Обновлен: {user.updated_at.date()}"
+		)
+		await message.answer(text, reply_markup=get_admin_keyboard())
+		await state.clear()
+	except Exception as e:
+		log.error("Ошибка при установке безлимитного баланса пользователю #{}: {}".format(user_id, e))
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.set_unlimited, F.text == "Нет")
+async def set_user_balance_unlimited_no(message: Message, state: FSMContext):
+	log.info("Установка безлимитного баланса отклонена. Вывод панели администратора")
+	await message.answer("Установка безлимитного баланса отклонена.", reply_markup=get_admin_keyboard())
+	await state.clear()

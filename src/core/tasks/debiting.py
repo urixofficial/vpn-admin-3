@@ -1,3 +1,5 @@
+from types import NoneType
+
 from core.config import settings
 from core.logger import log
 from core.repos.message import message_repo
@@ -12,6 +14,8 @@ async def debiting_funds():
 	daily_rate = settings.billing.daily_rate
 	counter = 0
 	for user in users:
+		if isinstance(user.balance, NoneType):
+			continue
 		if user.balance < daily_rate:
 			# await user_repo.update(user.id, UpdateUser(is_active=False))
 			await user_repo.block(user.id)

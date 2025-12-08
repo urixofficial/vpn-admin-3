@@ -13,7 +13,8 @@ router = Router(name="common_user_router")
 async def user_status(message: Message):
 	log.info("Пользователь {} ({}) запросил статус".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
-	text = f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\nБаланс: {user.balance}₽"
+	balance = f"{user.balance}₽" if isinstance(user.balance, int) else "∞"
+	text = f"Статус: {'Активен' if user.is_active else 'Заблокирован'}\nБаланс: {balance}"
 	await message.answer(text, reply_markup=get_user_keyboard())
 
 

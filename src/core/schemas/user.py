@@ -1,3 +1,4 @@
+from types import NoneType
 from typing import Annotated
 
 from annotated_types import MaxLen, MinLen
@@ -13,7 +14,7 @@ class CreateUser(BaseModel):
 
 class ReadUser(CreateUser):
 	is_active: bool
-	balance: int
+	balance: int | None
 	created_at: datetime
 	updated_at: datetime
 
@@ -27,7 +28,9 @@ class UpdateUser(BaseModel):
 	model_config = ConfigDict(from_attributes=True)
 
 	def __repr__(self):
-		return ", ".join([f"{key}={value}" for key, value in self.model_dump().items() if value != None])
+		return ", ".join(
+			[f"{key}={value}" for key, value in self.model_dump().items() if not isinstance(value, NoneType)]
+		)
 
 	def __str__(self):
 		return self.__repr__()
