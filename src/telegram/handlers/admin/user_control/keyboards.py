@@ -5,7 +5,7 @@ def get_user_control_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Список пользователей")
 	keyboard.button(text="Профиль пользователя")
-	keyboard.button(text="Создать пользователя")
+	keyboard.button(text="Добавить пользователя")
 	keyboard.button(text="Отмена")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
