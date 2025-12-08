@@ -8,6 +8,7 @@ from core.repos.transaction import transaction_repo
 from core.schemas.transaction import CreateTransaction
 from telegram.handlers.admin.keyboards import get_admin_keyboard
 from telegram.handlers.admin.transaction_control.states import AdminPaymentStates
+from telegram.handlers.keyboards import get_confirmation_keyboard
 from telegram.handlers.user.keyboards import get_user_keyboard
 
 router = Router(name="admin_payment_router")
@@ -31,7 +32,7 @@ async def payment_confirmation_yes(message: Message, state: FSMContext):
 		await message.bot.send_message(chat_id=transaction.user_id, text=text, reply_markup=get_user_keyboard())
 	except Exception as e:
 		log.error("Ошибка: {}".format(e))
-		await message.answer("Неизвестная ошибка.", reply_markup=get_user_keyboard())
+		await message.answer("Неизвестная ошибка.", reply_markup=get_admin_keyboard())
 		# raise
 	await state.clear()
 
@@ -42,5 +43,13 @@ async def admin_registration_no(message: Message, state: FSMContext):
 	transaction_data = await state.get_data()
 	user_id = transaction_data["awg_record_id"]
 	await message.answer("Запрос отклонен.", reply_markup=get_admin_keyboard())
+	await message.bot.send_message(user_id, "Ваша заявка на регистрацию отклонена.", reply_markup=get_user_keyboard())
+	await state.clear()
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation)
+async def admin_registration_unknown(message: Message, state: FSMContext):
+	log.info("Некорректный ввод. Повторный запрос...")
+	await message.answer("Выберете 'Да' или 'Нет'.", reply_markup=get_confirmation_keyboard())
 	await message.bot.send_message(user_id, "Ваша заявка на регистрацию отклонена.", reply_markup=get_user_keyboard())
 	await state.clear()
