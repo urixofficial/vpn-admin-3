@@ -9,7 +9,7 @@ from core.schemas.user import ReadUser, UpdateUser
 
 
 async def debiting_funds():
-	log.info("Запуск ежедневного списания средств. Тариф: {}".format(settings.billing.daily_rate))
+	log.info("Запуск ежедневного списания средств. Тариф: {} рубля/сутки".format(settings.billing.daily_rate))
 	users: list[ReadUser] = await user_repo.get_active()
 	daily_rate = settings.billing.daily_rate
 	counter = 0

@@ -44,12 +44,12 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 
 	async def block(self, user_id: int):
 		log.info("Блокировка пользователя #{}".format(user_id))
-		await self.update(UpdateUser(is_active=False))
+		await self.update(user_id, UpdateUser(is_active=False))
 		# блокировка в интерфейсе AmneziaWG
 
 	async def unblock(self, user_id: int):
 		log.info("Разблокировка пользователя #{}".format(user_id))
-		await self.update(UpdateUser(is_active=True))
+		await self.update(user_id, UpdateUser(is_active=True))
 		# блокировка в интерфейсе AmneziaWG
 
 
