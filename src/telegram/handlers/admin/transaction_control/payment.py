@@ -48,8 +48,6 @@ async def admin_registration_no(message: Message, state: FSMContext):
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation)
-async def admin_registration_unknown(message: Message, state: FSMContext):
+async def admin_registration_unknown(message: Message):
 	log.info("Некорректный ввод. Повторный запрос...")
 	await message.answer("Выберете 'Да' или 'Нет'.", reply_markup=get_confirmation_keyboard())
-	await message.bot.send_message(user_id, "Ваша заявка на регистрацию отклонена.", reply_markup=get_user_keyboard())
-	await state.clear()
