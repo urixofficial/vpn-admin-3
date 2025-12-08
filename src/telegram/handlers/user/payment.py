@@ -4,9 +4,11 @@ from aiogram.types import Message
 
 from core.config import settings
 from core.logger import log
+from core.repos.user import user_repo
 from telegram.handlers.keyboards import get_confirmation_keyboard
 from telegram.handlers.admin.transaction_control.states import AdminPaymentStates
 from telegram.handlers.keyboards import get_cancel_keyboard
+from telegram.handlers.user.keyboards import get_start_keyboard
 from telegram.handlers.user.states import UserPaymentStates
 
 router = Router(name="user_payment_router")
@@ -17,6 +19,10 @@ async def user_payment_step1(message: Message, state: FSMContext):
 	log.info(
 		"{} ({}) запустил диалог оплаты. Запрос суммы...".format(message.from_user.full_name, message.from_user.id)
 	)
+	user = await user_repo.get(message.from_user.id)
+	if not user:
+		await message.answer("Вы не зарегистрированы.", reply_markup=get_start_keyboard())
+		return
 	await message.answer("Введите сумму оплаты в рублях:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserPaymentStates.enter_amount)
 

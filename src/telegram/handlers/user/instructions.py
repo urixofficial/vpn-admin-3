@@ -1,14 +1,16 @@
 from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from core.logger import log
 from telegram.handlers.user.keyboards import get_user_keyboard
+from telegram.handlers.user.states import UserInstructionsState
 
 router = Router()
 
 
-@router.message(F.text == "Android")
-async def android(message: Message):
+@router.message(UserInstructionsState.choose, F.text == "Android")
+async def android(message: Message, state: FSMContext):
 	log.info(
 		"Пользователь {} ({}) выбрал инструкцию для Android".format(message.from_user.full_name, message.from_user.id)
 	)
@@ -23,10 +25,12 @@ async def android(message: Message):
 		"Если возникли проблемы, обратитесь к @urixofficial."
 	)
 	await message.answer(text, reply_markup=get_user_keyboard())
+	await state.clear()
 
 
-@router.message(F.text == "iPhone")
-async def ios(message: Message):
+
+@router.message(UserInstructionsState.choose, F.text == "iPhone")
+async def ios(message: Message, state: FSMContext):
 	log.info(
 		"Пользователь {} ({}) запросил инструкцию для iOS".format(message.from_user.full_name, message.from_user.id)
 	)
@@ -43,10 +47,11 @@ async def ios(message: Message):
 		"Если возникли проблемы, обратитесь к @urixofficial."
 	)
 	await message.answer(text, reply_markup=get_user_keyboard())
+	await state.clear()
 
 
-@router.message(F.text == "Windows")
-async def windows(message: Message):
+@router.message(UserInstructionsState.choose, F.text == "Windows")
+async def windows(message: Message, state: FSMContext):
 	log.info(
 		"Пользователь {} ({}) запросил инструкцию для Windows".format(message.from_user.full_name, message.from_user.id)
 	)
@@ -62,10 +67,11 @@ async def windows(message: Message):
 		"Если возникли проблемы, обратитесь к @urixofficial."
 	)
 	await message.answer(text, reply_markup=get_user_keyboard())
+	await state.clear()
 
 
-@router.message(F.text == "MacOS")
-async def macos(message: Message):
+@router.message(UserInstructionsState.choose, F.text == "MacOS")
+async def macos(message: Message, state: FSMContext):
 	log.info(
 		"Пользователь {} ({}) запросил инструкцию для MacOS".format(message.from_user.full_name, message.from_user.id)
 	)
@@ -81,3 +87,4 @@ async def macos(message: Message):
 		"Если возникли проблемы, обратитесь к @urixofficial."
 	)
 	await message.answer(text, reply_markup=get_user_keyboard())
+	await state.clear()
