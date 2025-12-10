@@ -14,7 +14,7 @@ from .states import UserCrudStates
 router = Router(name="create_user_router")
 
 
-@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Создать пользователя")
+@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Добавить пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
 	log.info(
 		"Пользователь {} ({}) запустил добавление пользователя. Запрос ID...".format(
