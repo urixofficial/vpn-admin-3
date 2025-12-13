@@ -15,8 +15,8 @@ from vpn.awg.utils import (
 	save_file,
 	generate_user_config,
 	get_free_ip,
-	sync_server_config,
 	generate_key_pair,
+	restart_interface,
 )
 from core.models import UserModel
 from core.database import connection
@@ -53,7 +53,8 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return False
 
 		# синхронизация интерфейса с новым конфигом
-		sync_server_config(settings.awg.interface, settings.awg.config_path)
+		# sync_server_config(settings.awg.interface, settings.awg.config_path)
+		restart_interface(settings.awg.interface)
 		return True
 
 	async def add_config(self, user_id: int) -> str | None:
