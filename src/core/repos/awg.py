@@ -58,7 +58,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 		return True
 
 	async def add_config(self, user_id: int) -> str | None:
-		log.debug("Создание новой конфигурации AWG для пользователя {}".format(user_id))
+		log.debug("Создание новой конфигурации AWG для пользователя #{}".format(user_id))
 		# Получение свободного IP
 		awg_records = await self.get_all()
 		ip = get_free_ip(awg_records, settings.awg.subnet, settings.awg.mask)
@@ -112,7 +112,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return False
 
 	async def get_config(self, user_id: int) -> str | None:
-		log.debug("Получение конфигурации AWG для пользователя {}".format(user_id))
+		log.debug("Получение конфигурации AWG для пользователя #{}".format(user_id))
 
 		try:
 			awg_records = await self.get_by_user(user_id)
@@ -124,7 +124,7 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return user_config
 
 		except Exception as e:
-			log.error("Ошибка при создании конфигурации AWG для пользователя {}: {}".format(user_id, e))
+			log.error("Ошибка при создании конфигурации AWG для пользователя #{}: {}".format(user_id, e))
 			return None
 
 
