@@ -19,7 +19,7 @@ def save_file(data: str, path: str) -> bool:
 
 
 def restart_interface(interface: str) -> bool:
-	log.debug("Перезапуск интерфейса {}".format(interface))
+	log.debug("Перезапуск интерфейса '{}'".format(interface))
 	try:
 		subprocess.run(
 			["sudo", "awg-quick", "down", interface],
