@@ -16,18 +16,16 @@ router = Router(name="create_user_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Добавить пользователя")
 async def create_user_step1(message: Message, state: FSMContext):
-	log.info(
-		"Пользователь {} ({}) запустил добавление пользователя. Запрос ID...".format(
-			message.from_user.full_name, message.from_user.id
-		)
-	)
+	log.info("{} ({}): Добавление пользователя. Запрос ID...".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.create_enter_id)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.create_enter_id)
 async def create_user_step2(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info(
+		"{} ({}): Введен ID пользователя: {}".format(message.from_user.full_name, message.from_user.id, message.text)
+	)
 	try:
 		user_id = int(message.text)
 	except ValueError:
@@ -53,7 +51,9 @@ async def create_user_step2(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.create_enter_name)
 async def create_user_step3(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info(
+		"{} ({}): Введено имя пользователя: {}".format(message.from_user.full_name, message.from_user.id, message.text)
+	)
 	name = message.text
 	if not 3 < len(name) < 24:
 		log.info("Имя должно быть от 3 до 24 символов")

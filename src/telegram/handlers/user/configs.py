@@ -14,9 +14,7 @@ router = Router(name="user_configs_router")
 @router.message(Command("get_awg_config"))
 @router.message(F.text == "Файл конфигурации AWG")
 async def get_awg_config(message: Message):
-	log.info(
-		"Пользователь {} ({}) запросил файлы конфигурации".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запрос файла конфигурации".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
 	if not user:
 		await message.answer("Вы не зарегистрированы.", reply_markup=get_start_keyboard())

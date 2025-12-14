@@ -16,9 +16,7 @@ router = Router(name="user_payment_router")
 
 @router.message(F.text == "Сообщить об оплате")
 async def user_payment_step1(message: Message, state: FSMContext):
-	log.info(
-		"{} ({}) запустил диалог оплаты. Запрос суммы...".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запуск диалог оплаты. Запрос суммы...".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
 	if not user:
 		await message.answer("Вы не зарегистрированы.", reply_markup=get_start_keyboard())
@@ -29,7 +27,7 @@ async def user_payment_step1(message: Message, state: FSMContext):
 
 @router.message(UserPaymentStates.enter_amount)
 async def user_payment_step2(message: Message, state: FSMContext, dispatcher: Dispatcher, bot: Bot):
-	log.info("Получено значение: {}".format(message.text))
+	log.info("{} ({}): Получено значение: {}".format(message.from_user.full_name, message.from_user.id, message.text))
 	try:
 		amount = int(message.text)
 	except ValueError:

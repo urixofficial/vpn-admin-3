@@ -15,7 +15,11 @@ router = Router(name="delete_user_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.show_profile, F.text == "Удалить")
 async def delete_user_ste1(message: Message, state: FSMContext):
-	log.info("Удаление пользователя. Запрос подтверждения...")
+	log.info(
+		"{} ({}): Удаление пользователя. Запрос подтверждения...".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 
 	await message.answer("Удалить пользователя?", reply_markup=get_confirmation_keyboard())
 	await state.set_state(UserCrudStates.delete_confirmation)
@@ -23,7 +27,7 @@ async def delete_user_ste1(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.delete_confirmation, F.text == "Да")
 async def delete_confirmation_ok(message: Message, state: FSMContext):
-	log.info("Подтверждение удаления получено")
+	log.info("{} ({}): Подтверждение удаления получено".format(message.from_user.full_name, message.from_user.id))
 	data = await state.get_data()
 	user_id = data["user_id"]
 	await user_repo.delete(user_id)
@@ -33,6 +37,6 @@ async def delete_confirmation_ok(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.delete_confirmation, F.text == "Нет")
 async def delete_confirmation_no(message: Message, state: FSMContext):
-	log.info("Удаление отменено")
+	log.info("{} ({}): Удаление отменено".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Удаление отменено.", reply_markup=get_user_control_keyboard())
 	await state.clear()

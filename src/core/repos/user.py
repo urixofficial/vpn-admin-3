@@ -12,7 +12,7 @@ from .base import BaseRepo
 class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 	@connection
 	async def get_all(self, session: AsyncSession) -> list[ReadUser]:
-		log.debug("Получение всех записей из таблицы")
+		log.debug("Получение всех записей из таблицы '{}'".format(self.model.__tablename__))
 		query = select(self.model).order_by(self.model.name)
 		result: Result = await session.execute(query)
 		item_models = result.scalars().all()
@@ -27,7 +27,7 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 
 	@connection
 	async def get_active(self, session: AsyncSession) -> list[ReadUser]:
-		log.debug("Получение всех активных пользователей")
+		log.debug("Получение всех активных пользователей из таблицы '{}'".format(self.model.__tablename__))
 		query = select(self.model).where(self.model.is_active).order_by(self.model.name)
 		result: Result = await session.execute(query)
 		item_models = result.scalars().all()
@@ -35,7 +35,7 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 
 	@connection
 	async def set_unlimited(self, user_id: int, session: AsyncSession) -> ReadUser:
-		log.debug("Установка пользователю #{} безлимитного баланса".format(user_id))
+		log.debug("Установка безлимитного баланса пользователю #{}".format(user_id))
 		user_model = await session.get(self.model, user_id)
 		user_model.balance = None
 		await session.commit()

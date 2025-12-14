@@ -15,14 +15,18 @@ router = Router(name="delete_awg_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, AwgCrudStates.show_profile, F.text == "Удалить")
 async def delete_awg_record_ste1(message: Message, state: FSMContext):
-	log.info("Удаление записи AWG. Запрос подтверждения...")
+	log.info(
+		"{} ({}): Удаление записи AWG. Запрос подтверждения...".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Удалить запись AWG?", reply_markup=get_confirmation_keyboard())
 	await state.set_state(AwgCrudStates.delete_confirmation)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, AwgCrudStates.delete_confirmation, F.text == "Да")
 async def delete_confirmation_yes(message: Message, state: FSMContext):
-	log.info("Подтверждение удаления получено")
+	log.info("{} ({}): Подтверждение удаления получено".format(message.from_user.full_name, message.from_user.id))
 	data = await state.get_data()
 	awg_record_id = data["awg_record_id"]
 	await awg_repo.delete(awg_record_id)
@@ -32,6 +36,6 @@ async def delete_confirmation_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AwgCrudStates.delete_confirmation, F.text == "Нет")
 async def delete_confirmation_no(message: Message, state: FSMContext):
-	log.info("Удаление отменено")
+	log.info("{} ({}): Удаление отменено".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Удаление отменено.", reply_markup=get_awg_control_keyboard())
 	await state.clear()

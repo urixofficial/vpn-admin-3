@@ -11,5 +11,5 @@ router = Router(name="transaction_control_panel_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Транзакции")
 async def transaction_control_panel(message: Message):
-	log.debug("Вывод панели управления транзакциями")
+	log.info("{} ({}): Вывод панели управления транзакциями".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Управление транзакциями:", reply_markup=get_transaction_control_keyboard())

@@ -16,7 +16,9 @@ router = Router(name="admin_payment_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation, F.text == "Да")
 async def payment_confirmation_yes(message: Message, state: FSMContext):
-	log.info("Оплата подтверждена администратором. Добавление транзакции")
+	log.info(
+		"{} ({}): Оплата подтверждена. Добавление транзакции".format(message.from_user.full_name, message.from_user.id)
+	)
 	transaction_data = await state.get_data()
 	create_transaction = CreateTransaction(**transaction_data)
 	try:
@@ -39,7 +41,9 @@ async def payment_confirmation_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation, F.text == "Нет")
 async def admin_registration_no(message: Message, state: FSMContext):
-	log.info("Запрос на подтверждение оплаты отклонен")
+	log.info(
+		"{} ({}): Запрос на подтверждение оплаты отклонен".format(message.from_user.full_name, message.from_user.id)
+	)
 	transaction_data = await state.get_data()
 	user_id = transaction_data["awg_record_id"]
 	await message.answer("Запрос отклонен.", reply_markup=get_admin_keyboard())
@@ -49,5 +53,7 @@ async def admin_registration_no(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminPaymentStates.confirmation)
 async def admin_registration_unknown(message: Message):
-	log.info("Некорректный ввод. Повторный запрос...")
+	log.info(
+		"{} ({}): Некорректный ввод. Повторный запрос...".format(message.from_user.full_name, message.from_user.id)
+	)
 	await message.answer("Выберете 'Да' или 'Нет'.", reply_markup=get_confirmation_keyboard())

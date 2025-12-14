@@ -20,7 +20,7 @@ router = Router(name="create_user_router")
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Добавить транзакцию")
 async def create_transaction_step1(message: Message, state: FSMContext):
 	log.info(
-		"Пользователь {} ({}) запустил создание транзакции. Запрос ID пользователя...".format(
+		"{} ({}): Создание транзакции. Запрос ID пользователя...".format(
 			message.from_user.full_name, message.from_user.id
 		)
 	)
@@ -30,7 +30,7 @@ async def create_transaction_step1(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.create_enter_user_id)
 async def create_transaction_step2(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info("{} ({}): Получено значение: {}".format(message.from_user.full_name, message.from_user.id, message.text))
 	try:
 		user_id = int(message.text)
 	except ValueError:
@@ -58,7 +58,7 @@ async def create_transaction_step2(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.create_enter_amount)
 async def create_transaction_step3(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info("{} ({}): Получено значение: {}".format(message.from_user.full_name, message.from_user.id, message.text))
 	try:
 		amount = int(message.text)
 	except ValueError:

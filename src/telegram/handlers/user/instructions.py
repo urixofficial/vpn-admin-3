@@ -11,9 +11,7 @@ router = Router()
 
 @router.message(UserInstructionsState.choose, F.text == "Android")
 async def android(message: Message, state: FSMContext):
-	log.info(
-		"Пользователь {} ({}) выбрал инструкцию для Android".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запрос инструкции для Android".format(message.from_user.full_name, message.from_user.id))
 	text = (
 		"Настройка VPN на Android (AWG)\n"
 		"----------------------------------------\n"
@@ -28,12 +26,9 @@ async def android(message: Message, state: FSMContext):
 	await state.clear()
 
 
-
 @router.message(UserInstructionsState.choose, F.text == "iPhone")
 async def ios(message: Message, state: FSMContext):
-	log.info(
-		"Пользователь {} ({}) запросил инструкцию для iOS".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запрос инструкции для iOS".format(message.from_user.full_name, message.from_user.id))
 	text = (
 		"Настройка VPN на iPhone (AWG)\n"
 		"----------------------------------------\n"
@@ -52,9 +47,7 @@ async def ios(message: Message, state: FSMContext):
 
 @router.message(UserInstructionsState.choose, F.text == "Windows")
 async def windows(message: Message, state: FSMContext):
-	log.info(
-		"Пользователь {} ({}) запросил инструкцию для Windows".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запрос инструкции для Windows".format(message.from_user.full_name, message.from_user.id))
 	text = (
 		"Настройка VPN на Windows (AWG)\n"
 		"----------------------------------------\n"
@@ -72,9 +65,7 @@ async def windows(message: Message, state: FSMContext):
 
 @router.message(UserInstructionsState.choose, F.text == "MacOS")
 async def macos(message: Message, state: FSMContext):
-	log.info(
-		"Пользователь {} ({}) запросил инструкцию для MacOS".format(message.from_user.full_name, message.from_user.id)
-	)
+	log.info("{} ({}): Запрос инструкции для MacOS".format(message.from_user.full_name, message.from_user.id))
 	text = (
 		"Настройка VPN на Windows (AWG)\n"
 		"----------------------------------------\n"

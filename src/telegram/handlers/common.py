@@ -13,13 +13,21 @@ router = Router(name="common_router")
 
 @router.message(F.text == "Отмена", F.from_user.id == settings.tg.admin_id)
 async def admin_cancel(message: Message, state: FSMContext):
-	log.info("Действие отменено")
+	log.info(
+		"{} ({}): Действие отменено. Вывод панели администратора".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Действие отменено.", reply_markup=get_admin_keyboard())
 	await state.clear()
 
 
 @router.message(F.text == "Отмена")
 async def user_cancel(message: Message, state: FSMContext):
-	log.info("Действие отменено")
+	log.info(
+		"{} ({}): Действие отменено. Вывод панели пользователя".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Действие отменено.", reply_markup=get_user_keyboard())
 	await state.clear()

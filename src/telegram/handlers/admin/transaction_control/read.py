@@ -15,7 +15,7 @@ router = Router(name="read_transaction_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список транзакций")
 async def list_transactions(message: Message):
-	log.info("Вывод списка транзакций")
+	log.info("{} ({}): Вывод списка транзакций".format(message.from_user.full_name, message.from_user.id))
 	transactions = await transaction_repo.get_all(settings.billing.transactions_limit)
 	if not transactions:
 		log.debug("Список транзакций пуст")
@@ -32,14 +32,18 @@ async def list_transactions(message: Message):
 
 @router.message(F.text == "Профиль транзакции")
 async def show_user_step1(message: Message, state: FSMContext):
-	log.info("Вывод профиля транзакции. Запрос ID...")
+	log.info(
+		"{} ({}): Вывод профиля транзакции. Запрос ID...".format(message.from_user.full_name, message.from_user.id)
+	)
 	await message.answer("Введите ID транзакции:", reply_markup=get_cancel_keyboard())
 	await state.set_state(TransactionCrudStates.show_enter_id)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, TransactionCrudStates.show_enter_id)
 async def show_transaction_step2(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info(
+		"{} ({}): Введен ID транзакции: {}".format(message.from_user.full_name, message.from_user.id, message.text)
+	)
 	try:
 		transaction_id = int(message.text)
 	except ValueError:
@@ -52,7 +56,7 @@ async def show_transaction_step2(message: Message, state: FSMContext):
 		return
 	transaction = await transaction_repo.get(transaction_id)
 	if not transaction:
-		log.info("Запись #{} не найдена. Повторный запрос...")
+		log.info("Запись #{} не найдена. Повторный запрос...".format(transaction_id))
 		await message.answer("Запись не найдена. Попробуйте еще раз:", reply_markup=get_cancel_keyboard())
 		return
 	await state.update_data(transaction_id=transaction_id)

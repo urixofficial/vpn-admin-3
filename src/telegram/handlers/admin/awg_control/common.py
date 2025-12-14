@@ -10,5 +10,5 @@ router = Router(name="common_awg_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "AWG")
 async def awg_control(message: Message):
-	log.debug("Вывод панели управления AWG")
+	log.info("{} ({}): Вывод панели управления AWG".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Управление AWG:", reply_markup=get_awg_control_keyboard())

@@ -16,9 +16,7 @@ router = Router(name="registration_router")
 @router.message(F.text == "Регистрация")
 async def registration_step1(message: Message, state: FSMContext):
 	log.info(
-		"Пользователь {} ({}) запустил диалог регистрации. Запрос имени...".format(
-			message.from_user.full_name, message.from_user.id
-		)
+		"{} ({}): Запуск диалога регистрации. Запрос имени...".format(message.from_user.full_name, message.from_user.id)
 	)
 	text = "Введите уникальное имя или псевдоним:"
 	await message.answer(text, reply_markup=get_cancel_keyboard())
@@ -27,7 +25,7 @@ async def registration_step1(message: Message, state: FSMContext):
 
 @router.message(UserRegistrationStates.enter_name)
 async def registration_step2(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info("{} ({}): Введено имя: {}".format(message.from_user.full_name, message.from_user.id, message.text))
 	name = message.text
 	if not 3 <= len(name) <= 48:
 		log.info("Имя должно быть от 3 до 48 символов. Повторный запрос...")
@@ -45,7 +43,7 @@ async def registration_step2(message: Message, state: FSMContext):
 
 @router.message(UserRegistrationStates.enter_description)
 async def registration_step3(message: Message, state: FSMContext):
-	log.info("Получено значение: {}".format(message.text))
+	log.info("{} ({}): Введено описание: {}".format(message.from_user.full_name, message.from_user.id, message.text))
 	description = message.text
 	await state.update_data(description=description)
 	text = "Отправить запрос администратору?"
@@ -55,7 +53,11 @@ async def registration_step3(message: Message, state: FSMContext):
 
 @router.message(UserRegistrationStates.confirmation, F.text == "Да")
 async def registration_confirmation_yes(message: Message, state: FSMContext, dispatcher: Dispatcher, bot: Bot):
-	log.info("Подтверждение регистрации от пользователя получено. Отправка запроса на подтверждение администратору...")
+	log.info(
+		"{} ({}): Подтверждение регистрации получено. Запрос подтверждения у администратора".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	data = await state.get_data()
 	name = data["name"]
 	description = data["description"]
@@ -86,13 +88,17 @@ async def registration_confirmation_yes(message: Message, state: FSMContext, dis
 
 @router.message(UserRegistrationStates.confirmation, F.text == "Нет")
 async def registration_confirmation_no(message: Message, state: FSMContext):
-	log.info("Регистрация отменена")
+	log.info("{} ({}): Регистрация отменена".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Регистрация отменена.", reply_markup=get_start_keyboard())
 	await state.clear()
 
 
 @router.message(UserRegistrationStates.confirmation)
 async def registration_confirmation_unknown(message: Message):
-	log.info("Некорректный ввод. Повторный запрос подтверждения регистрации...")
+	log.info(
+		"{} ({}): Некорректный ввод. Повторный запрос подтверждения регистрации...".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Выберете 'Да' или 'Нет'.", reply_markup=get_confirmation_keyboard())
 	return

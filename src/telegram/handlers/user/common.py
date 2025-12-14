@@ -13,7 +13,7 @@ router = Router(name="common_user_router")
 
 @router.message(F.text == "Статус")
 async def user_status(message: Message):
-	log.info("Пользователь {} ({}) запросил статус".format(message.from_user.full_name, message.from_user.id))
+	log.info("{} ({}): Запрос статуса".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
 	if not user:
 		await message.answer("Вы не зарегистрированы.", reply_markup=get_start_keyboard())
@@ -25,7 +25,7 @@ async def user_status(message: Message):
 
 @router.message(F.text == "Инструкции")
 async def instructions(message: Message, state: FSMContext):
-	log.info("Пользователь {} ({}) запросил инструкции".format(message.from_user.full_name, message.from_user.id))
+	log.info("{} ({}): Запрос инструкции".format(message.from_user.full_name, message.from_user.id))
 	user = await user_repo.get(message.from_user.id)
 	if not user:
 		await message.answer("Вы не зарегистрированы.", reply_markup=get_start_keyboard())
@@ -38,7 +38,7 @@ async def instructions(message: Message, state: FSMContext):
 @router.message(CommandStart())
 @router.message()
 async def start(message: Message):
-	log.info("Пользователь {} ({}) запустил бота".format(message.from_user.full_name, message.from_user.id))
+	log.info("{} ({}): Запуск бота / Вывод приветствия".format(message.from_user.full_name, message.from_user.id))
 	text = f"Приветствую, {message.from_user.full_name}!\n"
 	user = await user_repo.get(message.from_user.id)
 	if user:

@@ -8,6 +8,7 @@ from core.repos.user import user_repo
 from core.schemas.user import CreateUser
 from telegram.handlers.admin.keyboards import get_admin_keyboard
 from telegram.handlers.admin.user_control.states import AdminRegistrationStates
+from telegram.handlers.keyboards import get_confirmation_keyboard
 from telegram.handlers.user.keyboards import get_user_keyboard, get_start_keyboard
 
 router = Router(name="admin_registration_router")
@@ -15,7 +16,7 @@ router = Router(name="admin_registration_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation, F.text == "Да")
 async def admin_registration_yes(message: Message, state: FSMContext):
-	log.info("Заявка на регистрацию подтверждена администратором")
+	log.info("{} ({}): Заявка на регистрацию подтверждена".format(message.from_user.full_name, message.from_user.id))
 	user_data = await state.get_data()
 	create_user = CreateUser(**user_data)
 	try:
@@ -37,9 +38,17 @@ async def admin_registration_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation, F.text == "Нет")
 async def admin_registration_no(message: Message, state: FSMContext):
-	log.info("Регистрация на регистрацию отклонена администратором")
+	log.info("{} ({}): Регистрация на регистрацию отклонена".format(message.from_user.full_name, message.from_user.id))
 	user_data = await state.get_data()
 	user_id = user_data["id"]
 	await message.answer("Заявка отклонена.", reply_markup=get_admin_keyboard())
 	await message.bot.send_message(user_id, "Ваша заявка на регистрацию отклонена.", reply_markup=get_start_keyboard())
 	await state.clear()
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation)
+async def admin_registration_no(message: Message, state: FSMContext):
+	log.info(
+		"{} ({}): Некорректный ввод. Повторный запрос...".format(message.from_user.full_name, message.from_user.id)
+	)
+	await message.answer("Выберете 'Да' или 'Нет'", reply_markup=get_confirmation_keyboard())

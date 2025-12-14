@@ -17,14 +17,18 @@ router = Router(name="update_user_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.show_profile, F.text == "Изменить")
 async def update_user(message: Message, state: FSMContext):
-	log.debug("Обновление пользователя")
-	await message.answer("Изменить свойства пользователя:", reply_markup=get_update_keyboard(UpdateUser))
+	log.info("{} ({}): Обновление данных пользователя".format(message.from_user.full_name, message.from_user.id))
+	await message.answer("Выберете поле для изменения:", reply_markup=get_update_keyboard(UpdateUser))
 	await state.set_state(UserCrudStates.update_user)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.update_user, F.text.in_(UpdateUser.model_fields))
 async def edit_user_field_step1(message: Message, state: FSMContext):
-	log.info("Изменение свойства пользователя: '{}'. Запрос значения...".format(message.text))
+	log.info(
+		"{} ({}): Изменение поля '{}'. Запрос значения...".format(
+			message.from_user.full_name, message.from_user.id, message.text
+		)
+	)
 	await state.update_data(key=message.text)
 	await message.answer(f"Введите новое значение '{message.text}':", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.edit_field)
@@ -32,7 +36,11 @@ async def edit_user_field_step1(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.edit_field)
 async def edit_user_field_step2(message: Message, state: FSMContext):
-	log.info("Получено значение: '{}'. Проверка и установка значения".format(message.text))
+	log.info(
+		"{} ({}): Получено значение: '{}'. Проверка и установка значения".format(
+			message.from_user.full_name, message.from_user.id, message.text
+		)
+	)
 	data = await state.get_data()
 	user_id = data["user_id"]
 	key = data["key"]
@@ -61,7 +69,11 @@ async def edit_user_field_step2(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.show_profile, F.text == "Безлимит")
 async def set_user_balance_unlimited(message: Message, state: FSMContext):
-	log.info("Установка безлимитного баланса для пользователя. Запрос подтверждения...")
+	log.info(
+		"{} ({}): Установка безлимитного баланса пользователю. Запрос подтверждения...".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	fsm_data = await state.get_data()
 	user_id = fsm_data["user_id"]
 	user = await user_repo.get(user_id)
@@ -73,7 +85,11 @@ async def set_user_balance_unlimited(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.set_unlimited, F.text == "Да")
 async def set_user_balance_unlimited_yes(message: Message, state: FSMContext):
-	log.info("Подтверждение безлимитного баланса получено. Обновление записи в базе данных")
+	log.info(
+		"{} ({}): Подтверждение безлимитного баланса получено. Обновление записи в базе данных".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	fsm_data = await state.get_data()
 	user_id = fsm_data["user_id"]
 	try:
@@ -97,6 +113,10 @@ async def set_user_balance_unlimited_yes(message: Message, state: FSMContext):
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.set_unlimited, F.text == "Нет")
 async def set_user_balance_unlimited_no(message: Message, state: FSMContext):
-	log.info("Установка безлимитного баланса отклонена. Вывод панели администратора")
+	log.info(
+		"{} ({}): Установка безлимитного баланса отклонена. Вывод панели администратора".format(
+			message.from_user.full_name, message.from_user.id
+		)
+	)
 	await message.answer("Установка безлимитного баланса отклонена.", reply_markup=get_admin_keyboard())
 	await state.clear()

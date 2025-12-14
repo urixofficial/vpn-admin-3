@@ -16,7 +16,7 @@ router = Router(name="read_awg_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список записей AWG")
 async def list_awg_records(message: Message):
-	log.info("Вывод списка записей AWG")
+	log.info("{} ({}): Вывод списка записей AWG".format(message.from_user.full_name, message.from_user.id))
 	awg_records = await awg_repo.get_all()
 	if not awg_records:
 		log.debug("Список записей AWG пуст")
@@ -31,14 +31,18 @@ async def list_awg_records(message: Message):
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Профиль записи AWG")
 async def show_awg_record_step1(message: Message, state: FSMContext):
-	log.info("Вывод профиля записи AWG. Запрос ID...")
+	log.info(
+		"{} ({}): Вывод профиля записи AWG. Запрос ID...".format(message.from_user.full_name, message.from_user.id)
+	)
 	await message.answer("Введите ID записи AWG:", reply_markup=get_cancel_keyboard())
 	await state.set_state(AwgCrudStates.show_enter_id)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, AwgCrudStates.show_enter_id)
 async def show_awg_record_step2(message: Message, state: FSMContext):
-	log.debug("Получено значение: {}".format(message.text))
+	log.debug(
+		"{} ({}): Введен ID записи AWG: {}".format(message.from_user.full_name, message.from_user.id, message.text)
+	)
 	try:
 		awg_record_id = int(message.text)
 	except ValueError:

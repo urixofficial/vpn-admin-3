@@ -14,7 +14,7 @@ router = Router(name="read_user_router")
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Список пользователей")
 async def list_users(message: Message):
-	log.info("Вывод списка пользователей")
+	log.info("{} ({}): Вывод списка пользователей".format(message.from_user.full_name, message.from_user.id))
 	users = await user_repo.get_all()
 	if not users:
 		log.debug("Список пользователей пуст")
@@ -31,14 +31,18 @@ async def list_users(message: Message):
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Профиль пользователя")
 async def show_user_step1(message: Message, state: FSMContext):
-	log.info("Вывод профиля пользователя. Запрос ID...")
+	log.info(
+		"{} ({}): Вывод профиля пользователя. Запрос ID...".format(message.from_user.full_name, message.from_user.id)
+	)
 	await message.answer("Введите ID пользователя:", reply_markup=get_cancel_keyboard())
 	await state.set_state(UserCrudStates.show_enter_id)
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.show_enter_id)
 async def show_user_step2(message: Message, state: FSMContext):
-	log.debug("Получено значение: {}".format(message.text))
+	log.info(
+		"{} ({}): Введен ID пользователя: {}".format(message.from_user.full_name, message.from_user.id, message.text)
+	)
 	try:
 		user_id = int(message.text)
 	except ValueError:
