@@ -18,7 +18,7 @@ async def awg_control(message: Message):
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Перезапуск интерфейса AWG")
 async def restart_interface(message: Message):
 	log.info("{} ({}): Перезапуск интерфейса AWG".format(message.from_user.full_name, message.from_user.id))
-	status = awg_repo.restart_interface(message.from_user.id)
+	status = awg_repo.restart_interface(settings.awg.interface)
 	if status:
 		log.info("Интерфейс AWG успешно перезапущен")
 		await message.answer("Интерфейс AWG перезапущен.")

@@ -128,9 +128,9 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			return None
 
 	@staticmethod
-	def restart_interface() -> bool:
-		log.debug("Перезапуск интерфейса '{}'".format(settings.awg.interface))
-		if not restart_interface(settings.awg.interface):
+	def restart_interface(interface: str) -> bool:
+		log.debug("Перезапуск интерфейса '{}'".format(interface))
+		if not restart_interface(interface):
 			return False
 		return True
 
