@@ -68,7 +68,6 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 
 		# Генерация ключей
 		private_key, public_key = generate_key_pair()
-		# private_key, public_key = "key1", "key2"
 
 		# Формирование записи для таблицы awg
 		awg_record = CreateAwgRecord(ip=ip, mask=32, user_id=user_id, public_key=public_key, private_key=private_key)
