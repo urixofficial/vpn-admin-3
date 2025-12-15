@@ -33,7 +33,7 @@ def restart_interface(interface: str) -> bool:
 			capture_output=True,
 			text=True,
 		)
-		log.info("OK")
+		log.debug("OK")
 		return True
 	except Exception as e:
 		log.error("Ошибка перезапуска интерфейса {}: {}".format(interface, e))
