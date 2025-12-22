@@ -60,9 +60,8 @@ async def user_payment_confirmation_yes(message: Message, state: FSMContext, dis
 		user_id=settings.tg.admin_id,
 	)
 	data = await state.get_data()
-	user = data.get("user")
 	amount = data.get("amount")
-	await admin_state.update_data(user=user, amount=amount)
+	await admin_state.update_data(user_id=message.from_user.id, amount=amount)
 	await message.bot.send_message(
 		chat_id=settings.tg.admin_id,
 		text="Оплата\n"
