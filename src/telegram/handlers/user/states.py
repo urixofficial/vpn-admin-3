@@ -12,3 +12,4 @@ class UserInstructionsState(StatesGroup):
 
 class UserPaymentStates(StatesGroup):
 	enter_amount = State()
+	confirmation = State()
