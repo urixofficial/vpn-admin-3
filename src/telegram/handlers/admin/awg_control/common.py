@@ -15,7 +15,7 @@ async def awg_control(message: Message):
 	await message.answer("Управление AWG:", reply_markup=get_awg_control_keyboard())
 
 
-@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Перезапуск интерфейса AWG")
+@router.message(F.from_user.id == settings.tg.admin_id, F.text == "Обновление конфигурации сервера")
 async def update_server_config(message: Message):
 	log.info("{} ({}): Обновление конфигурации сервера".format(message.from_user.full_name, message.from_user.id))
 	status = awg_repo.update_server_config()
