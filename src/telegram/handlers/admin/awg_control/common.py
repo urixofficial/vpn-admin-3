@@ -21,7 +21,7 @@ async def restart_interface(message: Message):
 	status = awg_repo.restart_interface(settings.awg.interface)
 	if status:
 		log.info("Интерфейс AWG успешно перезапущен")
-		await message.answer("Интерфейс AWG перезапущен.")
+		await message.answer("Интерфейс AWG перезапущен.", reply_markup=get_awg_control_keyboard())
 	else:
 		log.error("Ошибка при перезапуске интерфейса")
-		await message.answer("Ошибка при перезапуске интерфейса.")
+		await message.answer("Ошибка при перезапуске интерфейса.", reply_markup=get_awg_control_keyboard())

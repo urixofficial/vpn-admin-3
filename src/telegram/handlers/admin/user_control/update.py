@@ -120,3 +120,9 @@ async def set_user_balance_unlimited_no(message: Message, state: FSMContext):
 	)
 	await message.answer("Установка безлимитного баланса отклонена.", reply_markup=get_admin_keyboard())
 	await state.clear()
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, UserCrudStates.set_unlimited)
+async def set_user_balance_unlimited_unknown(message: Message):
+	log.info("{} ({}): Некорректный ввод".format(message.from_user.full_name, message.from_user.id))
+	await message.answer("Введите 'Да' или 'Нет':", reply_markup=get_confirmation_keyboard())

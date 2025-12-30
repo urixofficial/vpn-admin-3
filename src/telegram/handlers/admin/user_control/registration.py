@@ -47,7 +47,7 @@ async def admin_registration_no(message: Message, state: FSMContext):
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, AdminRegistrationStates.confirmation)
-async def admin_registration_no(message: Message, state: FSMContext):
+async def admin_registration_unknown(message: Message):
 	log.info(
 		"{} ({}): Некорректный ввод. Повторный запрос...".format(message.from_user.full_name, message.from_user.id)
 	)

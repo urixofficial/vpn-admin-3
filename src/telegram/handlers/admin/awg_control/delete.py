@@ -39,3 +39,9 @@ async def delete_confirmation_no(message: Message, state: FSMContext):
 	log.info("{} ({}): Удаление отменено".format(message.from_user.full_name, message.from_user.id))
 	await message.answer("Удаление отменено.", reply_markup=get_awg_control_keyboard())
 	await state.clear()
+
+
+@router.message(F.from_user.id == settings.tg.admin_id, AwgCrudStates.delete_confirmation)
+async def broadcast_unknown(message: Message):
+	log.info("{} ({}): Некорректный ввод".format(message.from_user.full_name, message.from_user.id))
+	await message.answer("Введите 'Да' или 'Нет':", reply_markup=get_confirmation_keyboard())

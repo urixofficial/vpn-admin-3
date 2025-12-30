@@ -60,13 +60,11 @@ async def broadcast_yes(message: Message, state: FSMContext):
 @router.message(F.from_user.id == settings.tg.admin_id, NotificationStates.confirmation, F.text == "Нет")
 async def broadcast_no(message: Message, state: FSMContext):
 	log.info("{} ({}): Отправка рассылки отклонена".format(message.from_user.full_name, message.from_user.id))
-	user_data = await state.get_data()
 	await message.answer("Отправка рассылки отменена.", reply_markup=get_admin_keyboard())
 	await state.clear()
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, NotificationStates.confirmation)
-async def broadcast_unknown(message: Message, state: FSMContext):
+async def broadcast_unknown(message: Message):
 	log.info("{} ({}): Некорректный ввод".format(message.from_user.full_name, message.from_user.id))
-	user_data = await state.get_data()
 	await message.answer("Введите 'Да' или 'Нет':", reply_markup=get_confirmation_keyboard())
