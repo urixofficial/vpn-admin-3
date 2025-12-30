@@ -16,12 +16,12 @@ async def awg_control(message: Message):
 
 
 @router.message(F.from_user.id == settings.tg.admin_id, F.text == "Перезапуск интерфейса AWG")
-async def restart_interface(message: Message):
-	log.info("{} ({}): Перезапуск интерфейса AWG".format(message.from_user.full_name, message.from_user.id))
-	status = awg_repo.restart_interface(settings.awg.interface)
+async def update_server_config(message: Message):
+	log.info("{} ({}): Обновление конфигурации сервера".format(message.from_user.full_name, message.from_user.id))
+	status = awg_repo.update_server_config()
 	if status:
-		log.info("Интерфейс AWG успешно перезапущен")
+		log.info("Конфигурация сервера успешно обновлена")
 		await message.answer("Интерфейс AWG перезапущен.", reply_markup=get_awg_control_keyboard())
 	else:
-		log.error("Ошибка при перезапуске интерфейса")
-		await message.answer("Ошибка при перезапуске интерфейса.", reply_markup=get_awg_control_keyboard())
+		log.error("Ошибка при обновлении конфигурации сервера")
+		await message.answer("Ошибка при обновлении конфигурации сервера.", reply_markup=get_awg_control_keyboard())

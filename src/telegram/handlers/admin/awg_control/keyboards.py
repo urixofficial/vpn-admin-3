@@ -5,7 +5,7 @@ def get_awg_control_keyboard():
 	keyboard = ReplyKeyboardBuilder()
 	keyboard.button(text="Список записей AWG")
 	keyboard.button(text="Профиль записи AWG")
-	keyboard.button(text="Перезапуск интерфейса AWG")
+	keyboard.button(text="Обновление конфигурации сервера")
 	keyboard.button(text="Отмена")
 	keyboard.adjust(1)
 	return keyboard.as_markup(resize_keyboard=True)
