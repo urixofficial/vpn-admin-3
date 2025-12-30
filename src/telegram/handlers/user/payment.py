@@ -73,7 +73,7 @@ async def user_payment_confirmation_yes(message: Message, state: FSMContext, dis
 		reply_markup=get_confirmation_keyboard(),
 	)
 	await admin_state.set_state(AdminPaymentStates.confirmation)
-	await message.answer("Запрос на подтверждение оплаты отправлен.")
+	await message.answer("Запрос на подтверждение оплаты отправлен.", reply_markup=get_user_keyboard())
 	await state.clear()
 
 

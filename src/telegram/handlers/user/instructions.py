@@ -51,7 +51,7 @@ async def windows(message: Message, state: FSMContext):
 	text = (
 		"Настройка VPN на Windows (AWG)\n"
 		"----------------------------------------\n"
-		"1. Скачайте клиент Amnezia VPN для Windows: https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.10.0/AmneziaVPN_4.8.10.0_windows_x64.exe\n"
+		"1. Скачайте клиент Amnezia VPN для Windows: https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.11.4/AmneziaVPN_4.8.11.4_x64.exe\n"
 		"2. Установите приложение, следуя инструкциям установщика.\n"
 		"3. Скачайте файл конфигурации (.conf), полученный через команду /get_awg_config.\n"
 		"4. В приложении Amnezia VPN выберете пункт 'Файл с настройками подключения' и укажите путь к файлу, полученному в предыдущем пункте.\n"
@@ -69,7 +69,7 @@ async def macos(message: Message, state: FSMContext):
 	text = (
 		"Настройка VPN на Windows (AWG)\n"
 		"----------------------------------------\n"
-		"1. Скачайте клиент Amnezia VPN для Mac: https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.10.0/AmneziaVPN_4.8.10.0_macos.zip\n"
+		"1. Скачайте клиент Amnezia VPN для Mac: https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.11.4/AmneziaVPN_4.8.11.4_macos.zip\n"
 		"2. Установите приложение, следуя инструкциям установщика.\n"
 		"3. Скачайте файл конфигурации (.conf), полученный через команду /get_awg_config.\n"
 		"4. В приложении Amnezia VPN выберете пункт 'Файл с настройками подключения' и укажите путь к файлу, полученному в предыдущем пункте.\n"
