@@ -21,7 +21,7 @@ async def update_server_config(message: Message):
 	status = await awg_repo.update_server_config()
 	if status:
 		log.info("Конфигурация сервера успешно обновлена")
-		await message.answer("Интерфейс AWG перезапущен.", reply_markup=get_awg_control_keyboard())
+		await message.answer("Конфигурация сервера успешно обновлена.", reply_markup=get_awg_control_keyboard())
 	else:
 		log.error("Ошибка при обновлении конфигурации сервера")
 		await message.answer("Ошибка при обновлении конфигурации сервера.", reply_markup=get_awg_control_keyboard())
