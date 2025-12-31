@@ -10,6 +10,7 @@ from core.schemas.transaction import (
 
 from core.logger import log
 from core.database import connection
+from vpn.awg.utils import sync_server_config
 
 from .base import BaseRepo
 from ..config import settings
@@ -48,6 +49,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 				user_model.is_active = True
 		await session.commit()
 		# await session.refresh(item_model)
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return ReadTransaction.model_validate(transaction_model)
 
 	@connection
@@ -73,6 +75,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 
 		await session.commit()
 		await session.refresh(transaction_model)
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return self.read_schema.model_validate(transaction_model)
 
 	@connection
@@ -88,6 +91,7 @@ class TransactionRepo(BaseRepo[CreateTransaction, ReadTransaction, UpdateTransac
 			if user_model.is_active and user_model.balance < settings.billing.daily_rate:
 				user_model.is_active = False
 		await session.commit()
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return ReadTransaction.model_validate(transaction_model)
 
 

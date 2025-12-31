@@ -5,8 +5,10 @@ from core.database import connection
 from core.logger import log
 from core.schemas.user import CreateUser, ReadUser, UpdateUser
 from core.models.user import UserModel
+from vpn.awg.utils import sync_server_config
 
 from .base import BaseRepo
+from ..config import settings
 
 
 class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
@@ -38,19 +40,21 @@ class UserRepo(BaseRepo[CreateUser, ReadUser, UpdateUser, UserModel]):
 		log.debug("Установка безлимитного баланса пользователю #{}".format(user_id))
 		user_model = await session.get(self.model, user_id)
 		user_model.balance = None
+		user_model.is_active = True
 		await session.commit()
 		await session.refresh(user_model)
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 		return self.read_schema.model_validate(user_model)
 
 	async def block(self, user_id: int):
 		log.info("Блокировка пользователя #{}".format(user_id))
 		await self.update(user_id, UpdateUser(is_active=False))
-		# блокировка в интерфейсе AmneziaWG
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 
 	async def unblock(self, user_id: int):
 		log.info("Разблокировка пользователя #{}".format(user_id))
 		await self.update(user_id, UpdateUser(is_active=True))
-		# блокировка в интерфейсе AmneziaWG
+		sync_server_config(settings.awg.interface, settings.awg.config_path)
 
 
 user_repo = UserRepo(CreateUser, ReadUser, UpdateUser, UserModel)

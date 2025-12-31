@@ -2,6 +2,7 @@ from types import NoneType
 
 from core.config import settings
 from core.logger import log
+from core.repos.awg import awg_repo
 from core.repos.message import message_repo
 from core.repos.user import user_repo
 from core.schemas.message import CreateMessage
@@ -14,11 +15,10 @@ async def debiting_funds():
 	daily_rate = settings.billing.daily_rate
 	counter = 0
 	for user in users:
-		if isinstance(user.balance, NoneType):
+		if isinstance(user.balance, NoneType):  # для безлимитных пользователей
 			continue
 		if user.balance < daily_rate:
-			# await user_repo.update(user.id, UpdateUser(is_active=False))
-			await user_repo.block(user.id)
+			await user_repo.update(user.id, UpdateUser(is_active=False))  # блокировка
 			log.info("Учетная запись {} ({}) заблокирована".format(user.name, user.id))
 			text = "Ваша учетная запись заблокирована! Для возобновления сервиса внесите оплату."
 			notification = CreateMessage(chat_id=user.id, text=text)
@@ -32,4 +32,5 @@ async def debiting_funds():
 				notification = CreateMessage(chat_id=updated_user.id, text=text)
 				await message_repo.send_message(notification)
 				counter += 1
+	await awg_repo.update_server_config()  # обновление конфигурации сервера
 	log.info("Списание средств завершено. Отправлено уведомлений: {}".format(counter))
