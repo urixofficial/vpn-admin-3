@@ -126,12 +126,5 @@ class AwgRepo(BaseRepo[CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecor
 			log.error("Ошибка при создании конфигурации AWG для пользователя #{}: {}".format(user_id, e))
 			return None
 
-	@staticmethod
-	def restart_interface(interface: str) -> bool:
-		log.debug("Перезапуск интерфейса '{}'".format(interface))
-		if not restart_interface(interface):
-			return False
-		return True
-
 
 awg_repo = AwgRepo(CreateAwgRecord, ReadAwgRecord, UpdateAwgRecord, AwgRecordModel)
