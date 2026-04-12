@@ -56,10 +56,17 @@ class AwgSettings(BaseModel):
 	jmax: int = Field(default=None)
 	s1: int = Field(default=None)
 	s2: int = Field(default=None)
-	h1: int = Field(default=None)
-	h2: int = Field(default=None)
-	h3: int = Field(default=None)
-	h4: int = Field(default=None)
+	s3: int = Field(default=None)
+	s4: int = Field(default=None)
+	h1: str = Field(default=None)
+	h2: str = Field(default=None)
+	h3: str = Field(default=None)
+	h4: str = Field(default=None)
+	i1: str = Field(default=None)
+	i2: str = Field(default=None)
+	i3: str = Field(default=None)
+	i4: str = Field(default=None)
+	i5: str = Field(default=None)
 
 
 class Settings(BaseSettings):
