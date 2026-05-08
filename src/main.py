@@ -1,3 +1,4 @@
+#check
 import asyncio
 
 from core.config import settings
