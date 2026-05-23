@@ -88,7 +88,6 @@ def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> 
 
 	if awg_config.dns:
 		interface_lines.append(f"DNS = {awg_config.dns}")
-
 	if awg_config.jc:
 		interface_lines.append(f"Jc = {awg_config.jc}")
 	if awg_config.jmin:
@@ -137,29 +136,49 @@ def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> 
 
 def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRecord]) -> str:
 	log.debug("Генерация конфигурации AWG для сервера")
-	interface_section = (
-		f"[Interface]\n"
-		f"Address = {awg_config.server_ip}/{awg_config.mask}\n"
-		f"ListenPort = {awg_config.server_port}\n"
-		f"PrivateKey = {awg_config.server_private_key}\n"
-		f"Jc = {awg_config.jc}\n" if awg_config.jc else ""
-		f"Jmin = {awg_config.jmin}\n" if awg_config.jmin else ""
-		f"Jmax = {awg_config.jmax}\n" if awg_config.jmax else ""
-		f"S1 = {awg_config.s1}\n" if awg_config.s1 else "" 
-		f"S2 = {awg_config.s2}\n" if awg_config.s2 else ""
-		f"S3 = {awg_config.s3}\n" if awg_config.s3 else ""
-		f"S4 = {awg_config.s4}\n" if awg_config.s4 else ""
-		f"H1 = {awg_config.h1}\n" if awg_config.h1 else ""
-		f"H2 = {awg_config.h2}\n" if awg_config.h2 else "" 
-		f"H3 = {awg_config.h3}\n" if awg_config.h3 else ""
-		f"H4 = {awg_config.h4}\n" if awg_config.h4 else ""
-		f"I1 = {awg_config.i1}\n" if awg_config.i1 else "" 
-		f"I2 = {awg_config.i2}\n" if awg_config.i2 else ""
-		f"I3 = {awg_config.i3}\n" if awg_config.i3 else ""
-		f"I4 = {awg_config.i4}\n" if awg_config.i4 else ""
-		f"I5 = {awg_config.i5}\n" if awg_config.i5 else ""
-		"\n"
-	)
+
+	interface_lines = [
+		f"PrivateKey = {awg_config.server_private_key}\n",
+		f"Address = {awg_config.server_ip}/{awg_config.mask}\n",
+		f"ListenPort = {awg_config.server_port}\n",
+	]
+
+	if awg_config.jc:
+		interface_lines.append(f"Jc = {awg_config.jc}\n")
+	if awg_config.jmin:
+		interface_lines.append(f"Jmin = {awg_config.jmin}\n")
+	if awg_config.jmax:
+		interface_lines.append(f"Jmax = {awg_config.jmax}\n")
+	if awg_config.s1:
+		interface_lines.append(f"S1 = {awg_config.s1}\n")
+	if awg_config.s2:
+		interface_lines.append(f"S2 = {awg_config.s2}\n")
+	if awg_config.s3:
+		interface_lines.append(f"S3 = {awg_config.s3}\n")
+	if awg_config.s4:
+		interface_lines.append(f"S4 = {awg_config.s4}\n")
+	if awg_config.h1:
+		interface_lines.append(f"H1 = {awg_config.h1}\n")
+	if awg_config.h2:
+		interface_lines.append(f"H2 = {awg_config.h2}\n")
+	if awg_config.h3:
+		interface_lines.append(f"H3 = {awg_config.h3}\n")
+	if awg_config.h4:
+		interface_lines.append(f"H4 = {awg_config.h4}\n")
+	if awg_config.i1:
+		interface_lines.append(f"I1 = {awg_config.i1}\n")
+	if awg_config.i2:
+		interface_lines.append(f"I2 = {awg_config.i2}\n")
+	if awg_config.i3:
+		interface_lines.append(f"I3 = {awg_config.i3}\n")
+	if awg_config.i4:
+		interface_lines.append(f"I4 = {awg_config.i4}\n")
+	if awg_config.i5:
+		interface_lines.append(f"I5 = {awg_config.i5}\n")
+	"\n"
+
+	interface_section = "[Interface]\n" + "\n".join(interface_lines)
+
 	peers_section = ""
 	for awg_record in awg_records:
 		peer_section = (
