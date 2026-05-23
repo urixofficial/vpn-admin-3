@@ -104,7 +104,7 @@ def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> 
 		"\n"
 		f"[Peer]\n"
 		f"PublicKey = {awg_config.server_public_key}\n"
-		f"AllowedIPs = 0.0.0.0/0\n"
+		f"AllowedIPs = 0.0.0.0/0, ::/0\n"
 		f"Endpoint = {awg_config.server_ip}:{awg_config.server_port}\n"
 		f"PersistentKeepalive = 25"
 	)
