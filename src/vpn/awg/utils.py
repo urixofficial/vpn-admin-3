@@ -88,39 +88,39 @@ def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> 
 	)
 
 	if awg_config.dns:
-		interface_section += f"DNS = {awg_config.dns}"
+		interface_section += f"DNS = {awg_config.dns}\n"
 	if awg_config.jc:
-		interface_section += f"Jc = {awg_config.jc}"
+		interface_section += f"Jc = {awg_config.jc}\n"
 	if awg_config.jmin:
-		interface_section += f"Jmin = {awg_config.jmin}"
+		interface_section += f"Jmin = {awg_config.jmin}\n"
 	if awg_config.jmax:
-		interface_section += f"Jmax = {awg_config.jmax}"
+		interface_section += f"Jmax = {awg_config.jmax}\n"
 	if awg_config.s1:
-		interface_section += f"S1 = {awg_config.s1}"
+		interface_section += f"S1 = {awg_config.s1}\n"
 	if awg_config.s2:
-		interface_section += f"S2 = {awg_config.s2}"
+		interface_section += f"S2 = {awg_config.s2}\n"
 	if awg_config.s3:
-		interface_section += f"S3 = {awg_config.s3}"
+		interface_section += f"S3 = {awg_config.s3}\n"
 	if awg_config.s4:
-		interface_section += f"S4 = {awg_config.s4}"
+		interface_section += f"S4 = {awg_config.s4}\n"
 	if awg_config.h1:
-		interface_section += f"H1 = {awg_config.h1}"
+		interface_section += f"H1 = {awg_config.h1}\n"
 	if awg_config.h2:
-		interface_section += f"H2 = {awg_config.h2}"
+		interface_section += f"H2 = {awg_config.h2}\n"
 	if awg_config.h3:
-		interface_section += f"H3 = {awg_config.h3}"
+		interface_section += f"H3 = {awg_config.h3}\n"
 	if awg_config.h4:
-		interface_section += f"H4 = {awg_config.h4}"
+		interface_section += f"H4 = {awg_config.h4}\n"
 	if awg_config.i1:
-		interface_section += f"I1 = {awg_config.i1}"
+		interface_section += f"I1 = {awg_config.i1}\n"
 	if awg_config.i2:
-		interface_section += f"I2 = {awg_config.i2}"
+		interface_section += f"I2 = {awg_config.i2}\n"
 	if awg_config.i3:
-		interface_section += f"I3 = {awg_config.i3}"
+		interface_section += f"I3 = {awg_config.i3}\n"
 	if awg_config.i4:
-		interface_section += f"I4 = {awg_config.i4}"
+		interface_section += f"I4 = {awg_config.i4}\n"
 	if awg_config.i5:
-		interface_section += f"I5 = {awg_config.i5}"
+		interface_section += f"I5 = {awg_config.i5}\n"
 
 	peer_section = (
 		f"\n[Peer]\n"
