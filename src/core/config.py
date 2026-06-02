@@ -8,12 +8,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class AppSettings(BaseModel):
-	name: str = Field(default=None, description="Название приложения")
-	version: str = Field(default=None, description="Версия приложения")
+	name: str = Field(default="", description="Название приложения")
+	version: str = Field(default="", description="Версия приложения")
 
 
 class DatabaseSettings(BaseModel):
-	path: str = Field(default=None, description="Путь к базе данных")
+	path: str = Field(default="data/data.db", description="Путь к базе данных")
 	echo: bool = Field(default=False, description="Вывод SQL-команд в терминал")
 
 	naming_convention: dict[str, str] = {
@@ -30,43 +30,43 @@ class DatabaseSettings(BaseModel):
 
 
 class TelegramSettings(BaseModel):
-	token: str = Field(default=None, description="Telegram Token")
-	admin_id: int = Field(default=None, description="Admin ID")
+	token: str = Field(default="", description="Telegram Token")
+	admin_id: int = Field(default=0, description="Admin ID")
 
 
 class BillingSettings(BaseModel):
-	daily_rate: int = Field(default=None, description="Тариф рублей в день")
+	daily_rate: int = Field(default=0, description="Тариф рублей в день")
 	hour: int = Field(default=12, description="Время проверки биллинга. Часы")
 	minute: int = Field(default=0, description="Время проверки биллинга. Минуты")
 	transactions_limit: int = Field(default=100, description="Ограничение выводимого количества транзакций")
 
 
 class AwgSettings(BaseModel):
-	server_ip: str = Field(default=None)
-	server_port: int = Field(default=None)
-	subnet: str = Field(default=None)
-	mask: int = Field(default=None)
-	dns: str = Field(default=None)
-	server_public_key: str = Field(default=None)
-	server_private_key: str = Field(default=None)
+	server_ip: str = Field(default="0.0.0.0")
+	server_port: int = Field(default=56789)
+	subnet: str = Field(default="10.8.1.0")
+	mask: int = Field(default=24)
+	dns: str = Field(default="1.1.1.1")
+	server_public_key: str = Field(default="")
+	server_private_key: str = Field(default="")
 	config_path: str = Field(default="/etc/amnezia/amneziawg/awg0.conf")
-	interface: str = Field(default=None)
-	jc: int = Field(default=None)
-	jmin: int = Field(default=None)
-	jmax: int = Field(default=None)
-	s1: int = Field(default=None)
-	s2: int = Field(default=None)
-	s3: int = Field(default=None)
-	s4: int = Field(default=None)
-	h1: str = Field(default=None)
-	h2: str = Field(default=None)
-	h3: str = Field(default=None)
-	h4: str = Field(default=None)
-	i1: str = Field(default=None)
-	i2: str = Field(default=None)
-	i3: str = Field(default=None)
-	i4: str = Field(default=None)
-	i5: str = Field(default=None)
+	interface: str = Field(default="awg0")
+	jc: int | None = Field(default=None)
+	jmin: int | None = Field(default=None)
+	jmax: int | None = Field(default=None)
+	s1: int | None = Field(default=None)
+	s2: int | None = Field(default=None)
+	s3: int | None = Field(default=None)
+	s4: int | None = Field(default=None)
+	h1: str | None = Field(default=None)
+	h2: str | None = Field(default=None)
+	h3: str | None = Field(default=None)
+	h4: str | None = Field(default=None)
+	i1: str | None = Field(default=None)
+	i2: str | None = Field(default=None)
+	i3: str | None = Field(default=None)
+	i4: str | None = Field(default=None)
+	i5: str | None = Field(default=None)
 
 
 class Settings(BaseSettings):

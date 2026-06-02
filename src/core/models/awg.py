@@ -11,13 +11,14 @@ if TYPE_CHECKING:
 
 
 class AwgRecordModel(Base):
-	__tablename__ = "awg"
+	__tablename__: str = "awg"
+
 	id: Mapped[int] = mapped_column(primary_key=True)
 	ip: Mapped[str] = mapped_column(unique=True)
-	mask: Mapped[int]
+	mask: Mapped[int] = mapped_column()
 	user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-	public_key: Mapped[str]
-	private_key: Mapped[str]
+	public_key: Mapped[str] = mapped_column()
+	private_key: Mapped[str] = mapped_column()
 	created_at: Mapped[datetime] = mapped_column(
 		default=datetime.now(),
 		server_default=func.now(),

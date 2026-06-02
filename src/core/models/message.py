@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class MessageModel(Base):
 	__tablename__ = "messages"
+
 	id: Mapped[int] = mapped_column(primary_key=True)
 	chat_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 	text: Mapped[str]

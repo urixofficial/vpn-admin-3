@@ -9,4 +9,7 @@ router = Router()
 
 @router.message(CommandStart)
 async def command_start(message: Message):
-	log.debug("Пользователь {} ({}) выполнил команду /start".format(message.from_user.full_name, message.from_user.id))
+	user_name = message.from_user.full_name if message.from_user else "Неизвестный"
+	user_id = message.from_user.id if message.from_user else "Неизвестный"
+	log.debug("Пользователь {} ({}) выполнил команду /start".format(user_name, user_id))
+
