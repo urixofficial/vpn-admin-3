@@ -5,11 +5,17 @@ build/
 dist/
 wheels/
 *.egg-info
+.idea/
+
+# Macos files
+.DS_Store
 
 # Virtual environments
 .venv
 
-.idea/
-src/.env
-src/logs/app.log
-src/data/data.db
+# Project variables
+*.env
+*.log
+*.db
+todo.txt
+
