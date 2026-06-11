@@ -82,9 +82,7 @@ def generate_user_config(awg_record: ReadAwgRecord, awg_config: AwgSettings) -> 
 	log.debug("Генерация конфигурации AWG для пользователя")
 
 	interface_section = (
-		"[Interface]\n"
-		f"PrivateKey = {awg_record.private_key}\n"
-		f"Address = {awg_record.ip}/{awg_record.mask}\n\n"
+		f"[Interface]\nPrivateKey = {awg_record.private_key}\nAddress = {awg_record.ip}/{awg_record.mask}\n\n"
 	)
 
 	if awg_config.dns:
@@ -139,7 +137,7 @@ def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRec
 	interface_section = (
 		"[Interface]\n"
 		f"PrivateKey = {awg_config.server_private_key}\n"
-		f"Address = {awg_config.subnet}/{awg_config.mask}\n"
+		f"Address = {awg_config.subnet[:-1]}/{awg_config.mask}\n"
 		f"ListenPort = {awg_config.server_port}\n"
 	)
 
@@ -179,9 +177,7 @@ def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRec
 	peers_section = "\n"
 	for awg_record in awg_records:
 		peer_section = (
-			f"[Peer]\n"
-			f"PublicKey = {awg_record.public_key}\n"
-			f"AllowedIPs = {awg_record.ip}/{awg_record.mask}\n\n"
+			f"[Peer]\nPublicKey = {awg_record.public_key}\nAllowedIPs = {awg_record.ip}/{awg_record.mask}\n\n"
 		)
 		peers_section += peer_section
 	return interface_section + peers_section

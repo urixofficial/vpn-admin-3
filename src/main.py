@@ -11,15 +11,15 @@ from telegram.bot import run_bot
 
 
 async def main():
-	log.info("Запуск {} {}".format(settings.app.name, settings.app.version))
+    log.info("Запуск {} {}".format(settings.app.name, settings.app.version))
 
-	setup_scheduler()
-	start_scheduler()
+    setup_scheduler()
+    start_scheduler()
 
-	try:
-		await run_bot(bot)
-	finally:
-		stop_scheduler()  # на случай Ctrl+C
+    try:
+        await run_bot(bot)
+    finally:
+        stop_scheduler()  # на случай Ctrl+C
 
 
 if __name__ == "__main__":
