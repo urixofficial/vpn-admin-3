@@ -137,7 +137,7 @@ def generate_server_config(awg_config: AwgSettings, awg_records: list[ReadAwgRec
 	interface_section = (
 		"[Interface]\n"
 		f"PrivateKey = {awg_config.server_private_key}\n"
-		f"Address = {awg_config.subnet[:-1]}/{awg_config.mask}\n"
+		f"Address = {awg_config.subnet[:-1]}1/{awg_config.mask}\n"
 		f"ListenPort = {awg_config.server_port}\n"
 	)
 
